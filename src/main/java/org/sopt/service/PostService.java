@@ -3,7 +3,6 @@ package org.sopt.service;
 import org.sopt.domain.Post;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.response.CreatePostResponse;
-import org.sopt.dto.response.PostResponse;
 import org.sopt.repository.PostRepository;
 
 import java.util.List;
