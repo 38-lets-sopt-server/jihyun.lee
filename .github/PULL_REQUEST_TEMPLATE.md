@@ -1,5 +1,5 @@
 # 🔥*Pull requests*
-
+- Resolved: #이슈번호
 
 ## 👷 **과제 구현**
 
