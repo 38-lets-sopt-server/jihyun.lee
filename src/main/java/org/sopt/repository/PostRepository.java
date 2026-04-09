@@ -25,6 +25,15 @@ public class PostRepository {
                 .orElse(null);
     }
 
+    public Post update(Long id, String title, String content) {
+        Post post = findById(id);
+
+        if (post == null) return null;
+
+        post.update(title, content);
+        return post;
+    }
+
     public boolean deleteById(Long id) {
         return postList.removeIf(post -> post.getId().equals(id));
     }

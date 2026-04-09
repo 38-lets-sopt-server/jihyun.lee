@@ -41,7 +41,11 @@ public class PostController {
 
     // PUT /posts/{id} 📝 과제
     public void updatePost(Long id, String newTitle, String newContent) {
-        // TODO: postService.updatePost() 호출, 예외 발생 시 에러 메시지 출력
+        try {
+            postService.updatePost(id, newTitle, newContent);
+        } catch (IllegalArgumentException e) {
+            System.out.println("에러: " + e.getMessage());
+        }
     }
 
     // DELETE /posts/{id} 📝 과제

@@ -37,7 +37,11 @@ public class PostService {
 
     // UPDATE 📝 과제
     public void updatePost(Long id, String newTitle, String newContent) {
-        // TODO
+        Post updatedPost = postRepository.update(id, newTitle, newContent);
+
+        if (updatedPost == null) {
+            throw new IllegalArgumentException("해당 게시글이 존재하지 않습니다.");
+        }
     }
 
     // DELETE 📝 과제
