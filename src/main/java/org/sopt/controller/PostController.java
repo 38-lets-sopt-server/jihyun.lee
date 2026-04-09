@@ -21,12 +21,22 @@ public class PostController {
 
     // GET /posts 📝 과제
     public List<PostResponse> getAllPosts() {
-        return postService.getAllPosts();
+        try {
+            return postService.getAllPosts();
+        } catch (IllegalArgumentException e) {
+            System.out.println("에러: " + e.getMessage());
+            return null;
+        }
     }
 
     // GET /posts/{id} 📝 과제
     public PostResponse getPost(Long id) {
-        return postService.getPost(id);
+        try {
+            return postService.getPost(id);
+        } catch (IllegalArgumentException e) {
+            System.out.println("에러: " + e.getMessage());
+            return null;
+        }
     }
 
     // PUT /posts/{id} 📝 과제
@@ -36,6 +46,10 @@ public class PostController {
 
     // DELETE /posts/{id} 📝 과제
     public void deletePost(Long id) {
-        // TODO: postService.deletePost() 호출, 예외 발생 시 에러 메시지 출력
+        try {
+            postService.deletePost(id);
+        } catch (IllegalArgumentException e) {
+            System.out.println("에러: " + e.getMessage());
+        }
     }
 }
