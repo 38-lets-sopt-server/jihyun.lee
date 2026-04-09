@@ -26,8 +26,7 @@ public class PostController {
 
     // GET /posts/{id} 📝 과제
     public PostResponse getPost(Long id) {
-        // TODO: postService.getPost(id) 호출, 예외 발생 시 null 반환
-        return null;
+        return postService.getPost(id);
     }
 
     // PUT /posts/{id} 📝 과제

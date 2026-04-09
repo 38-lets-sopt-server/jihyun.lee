@@ -18,6 +18,13 @@ public class PostRepository {
         return postList;
     }
 
+    public Post findById(Long id) {
+        return postList.stream()
+                .filter(post -> post.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
     public Long generateId() {
         return nextId++;
     }

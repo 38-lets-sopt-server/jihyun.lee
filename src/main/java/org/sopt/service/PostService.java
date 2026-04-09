@@ -7,7 +7,6 @@ import org.sopt.dto.response.PostResponse;
 import org.sopt.repository.PostRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PostService {
     private final PostRepository postRepository = new PostRepository();
@@ -33,8 +32,7 @@ public class PostService {
 
     // READ - 단건 📝 과제
     public PostResponse getPost(Long id) {
-        // TODO
-        return null;
+        return new PostResponse(postRepository.findById(id));
     }
 
     // UPDATE 📝 과제
