@@ -24,7 +24,7 @@ public class PostController {
         try {
             return postService.getAllPosts();
         } catch (IllegalArgumentException e) {
-            System.out.println("에러: " + e.getMessage());
+            System.out.println("🚫 " + e.getMessage());
             return null;
         }
     }
@@ -34,7 +34,7 @@ public class PostController {
         try {
             return postService.getPost(id);
         } catch (IllegalArgumentException e) {
-            System.out.println("에러: " + e.getMessage());
+            System.out.println("🚫 " + e.getMessage());
             return null;
         }
     }
@@ -44,7 +44,7 @@ public class PostController {
         try {
             postService.updatePost(id, newTitle, newContent);
         } catch (IllegalArgumentException e) {
-            System.out.println("에러: " + e.getMessage());
+            System.out.println("🚫 " + e.getMessage());
         }
     }
 
@@ -53,7 +53,7 @@ public class PostController {
         try {
             postService.deletePost(id);
         } catch (IllegalArgumentException e) {
-            System.out.println("에러: " + e.getMessage());
+            System.out.println("🚫 " + e.getMessage());
         }
     }
 }

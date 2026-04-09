@@ -32,7 +32,11 @@ public class PostService {
 
     // READ - 단건 📝 과제
     public PostResponse getPost(Long id) {
-        return new PostResponse(postRepository.findById(id));
+        Post post = postRepository.findById(id);
+        if (post == null) {
+            throw new IllegalArgumentException("해당 게시글이 존재하지 않습니다.");
+        }
+        return new PostResponse(post);
     }
 
     // UPDATE 📝 과제
