@@ -2,6 +2,7 @@ package org.sopt.controller;
 
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.response.CreatePostResponse;
+import org.sopt.dto.response.PostResponse;
 import org.sopt.service.PostService;
 
 import java.util.List;
@@ -20,8 +21,7 @@ public class PostController {
 
     // GET /posts 📝 과제
     public List<PostResponse> getAllPosts() {
-        // TODO: postService.getAllPosts() 호출해서 반환
-        return null;
+        return postService.getAllPosts();
     }
 
     // GET /posts/{id} 📝 과제

@@ -5,6 +5,7 @@ package org.sopt;
 import org.sopt.controller.PostController;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.response.CreatePostResponse;
+import org.sopt.dto.response.PostResponse;
 
 import java.util.List;
 import java.util.Scanner;

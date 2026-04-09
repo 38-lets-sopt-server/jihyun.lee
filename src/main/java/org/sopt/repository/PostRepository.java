@@ -14,6 +14,10 @@ public class PostRepository {
         return post;
     }
 
+    public List<Post> findAll() {
+        return postList;
+    }
+
     public Long generateId() {
         return nextId++;
     }
