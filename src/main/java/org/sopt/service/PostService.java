@@ -6,6 +6,7 @@ import org.sopt.dto.response.CreatePostResponse;
 import org.sopt.dto.response.PostResponse;
 import org.sopt.exception.PostNotFoundException;
 import org.sopt.repository.PostRepository;
+import org.sopt.validation.PostValidator;
 
 import java.util.List;
 
@@ -14,12 +15,7 @@ public class PostService {
 
     // CREATE
     public CreatePostResponse createPost(CreatePostRequest request) {
-        if (request.title == null || request.title.isBlank()) {
-            throw new IllegalArgumentException("제목은 필수입니다!");
-        }
-        if (request.content == null || request.content.isBlank()) {
-            throw new IllegalArgumentException("내용은 필수입니다!");
-        }
+        PostValidator.validateCreatePost(request);
         String createdAt = java.time.LocalDateTime.now().toString();
         Post post = new Post(postRepository.generateId(), request.title, request.content, request.author, createdAt);
         postRepository.save(post);
@@ -42,6 +38,7 @@ public class PostService {
 
     // UPDATE 📝 과제
     public void updatePost(Long id, String newTitle, String newContent) {
+        PostValidator.validateUpdatePost(newTitle, newContent);
         Post updatedPost = postRepository.update(id, newTitle, newContent);
 
         if (updatedPost == null) {

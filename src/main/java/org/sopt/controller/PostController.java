@@ -44,6 +44,8 @@ public class PostController {
     public void updatePost(Long id, String newTitle, String newContent) {
         try {
             postService.updatePost(id, newTitle, newContent);
+        } catch (IllegalArgumentException e) {
+            System.out.println("🚫 " + e.getMessage());
         } catch (PostNotFoundException e) {
             System.out.println("🚫 " + e.getMessage());
         }
