@@ -47,7 +47,7 @@ public class Main {
                     if (allResponse.isSuccess()) {
                         List<PostResponse> posts = allResponse.getData();
                         if (posts.isEmpty()) {
-                            System.out.println("등록된 게시글이 없습니다.");
+                            System.out.println("💬 등록된 게시글이 없습니다.");
                         } else {
                             posts.forEach(p -> System.out.println(p + "\n---"));
                         }
