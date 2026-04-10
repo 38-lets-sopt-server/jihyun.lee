@@ -29,7 +29,7 @@ public class PostService {
     public PostResponse getPost(Long id) {
         Post post = postRepository.findById(id);
         if (post == null) {
-            throw new PostNotFoundException(id);
+            throw new PostNotFoundException();
         }
         return new PostResponse(post);
     }
@@ -40,7 +40,7 @@ public class PostService {
         Post updatedPost = postRepository.update(id, newTitle, newContent);
 
         if (updatedPost == null) {
-            throw new PostNotFoundException(id);
+            throw new PostNotFoundException();
         }
     }
 
@@ -49,7 +49,7 @@ public class PostService {
         boolean deleted = postRepository.deleteById(id);
 
         if (!deleted) {
-            throw new PostNotFoundException(id);
+            throw new PostNotFoundException();
         }
     }
 }
