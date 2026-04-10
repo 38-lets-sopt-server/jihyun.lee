@@ -3,6 +3,7 @@ package org.sopt.controller;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.response.CreatePostResponse;
 import org.sopt.dto.response.PostResponse;
+import org.sopt.exception.PostNotFoundException;
 import org.sopt.service.PostService;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class PostController {
     public PostResponse getPost(Long id) {
         try {
             return postService.getPost(id);
-        } catch (IllegalArgumentException e) {
+        } catch (PostNotFoundException e) {
             System.out.println("🚫 " + e.getMessage());
             return null;
         }
@@ -43,7 +44,7 @@ public class PostController {
     public void updatePost(Long id, String newTitle, String newContent) {
         try {
             postService.updatePost(id, newTitle, newContent);
-        } catch (IllegalArgumentException e) {
+        } catch (PostNotFoundException e) {
             System.out.println("🚫 " + e.getMessage());
         }
     }
@@ -52,7 +53,7 @@ public class PostController {
     public void deletePost(Long id) {
         try {
             postService.deletePost(id);
-        } catch (IllegalArgumentException e) {
+        } catch (PostNotFoundException e) {
             System.out.println("🚫 " + e.getMessage());
         }
     }
