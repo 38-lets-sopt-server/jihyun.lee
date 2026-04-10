@@ -21,12 +21,12 @@ public class PostController {
         }
     }
 
-    // GET /posts
+    // GET /posts 📝 과제
     public ApiResponse<List<PostResponse>> getAllPosts() {
         return ApiResponse.success(postService.getAllPosts());
     }
 
-    // GET /posts/{id}
+    // GET /posts/{id} 📝 과제
     public ApiResponse<PostResponse> getPost(Long id) {
         try {
             return ApiResponse.success(postService.getPost(id));
@@ -35,7 +35,7 @@ public class PostController {
         }
     }
 
-    // PUT /posts/{id}
+    // PUT /posts/{id} 📝 과제
     public ApiResponse<Void> updatePost(Long id, String newTitle, String newContent) {
         try {
             postService.updatePost(id, newTitle, newContent);
@@ -45,7 +45,7 @@ public class PostController {
         }
     }
 
-    // DELETE /posts/{id}
+    // DELETE /posts/{id} 📝 과제
     public ApiResponse<Void> deletePost(Long id) {
         try {
             postService.deletePost(id);
