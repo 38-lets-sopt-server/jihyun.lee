@@ -16,7 +16,7 @@ public class PostController {
     public ApiResponse<Void> createPost(CreatePostRequest request) {
         try {
             postService.createPost(request);
-            return ApiResponse.success("✅ 게시글 등록 완료!");
+            return ApiResponse.successMessage("✅ 게시글 등록 완료!");
         } catch (IllegalArgumentException e) {
             return ApiResponse.error(e.getMessage());
         }
@@ -40,7 +40,7 @@ public class PostController {
     public ApiResponse<Void> updatePost(UpdatePostRequest request) {
         try {
             postService.updatePost(request);
-            return ApiResponse.success("✅ 게시글 수정 완료!");
+            return ApiResponse.successMessage("✅ 게시글 수정 완료!");
         } catch (PostNotFoundException | IllegalArgumentException e) {
             return ApiResponse.error(e.getMessage());
         }
@@ -50,7 +50,7 @@ public class PostController {
     public ApiResponse<Void> deletePost(Long id) {
         try {
             postService.deletePost(id);
-            return ApiResponse.success("✅ 게시글 삭제 완료!");
+            return ApiResponse.successMessage("✅ 게시글 삭제 완료!");
         } catch (PostNotFoundException e) {
             return ApiResponse.error(e.getMessage());
         }

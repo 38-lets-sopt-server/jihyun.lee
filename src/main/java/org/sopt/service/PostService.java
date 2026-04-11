@@ -8,6 +8,7 @@ import org.sopt.exception.PostNotFoundException;
 import org.sopt.repository.PostRepository;
 import org.sopt.validation.PostValidator;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class PostService {
@@ -16,7 +17,7 @@ public class PostService {
     // CREATE
     public void createPost(CreatePostRequest request) {
         PostValidator.validateCreatePost(request);
-        String createdAt = java.time.LocalDateTime.now().toString();
+        String createdAt = LocalDateTime.now().toString();
         Post post = new Post(postRepository.generateId(), request.title, request.content, request.author, createdAt);
         postRepository.save(post);
     }
