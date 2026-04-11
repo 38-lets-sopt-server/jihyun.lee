@@ -14,6 +14,30 @@ public class PostRepository {
         return post;
     }
 
+    public List<Post> findAll() {
+        return postList;
+    }
+
+    public Post findById(Long id) {
+        return postList.stream()
+                .filter(post -> post.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Post update(Long id, String title, String content) {
+        Post post = findById(id);
+
+        if (post == null) return null;
+
+        post.update(title, content);
+        return post;
+    }
+
+    public boolean deleteById(Long id) {
+        return postList.removeIf(post -> post.getId().equals(id));
+    }
+
     public Long generateId() {
         return nextId++;
     }
