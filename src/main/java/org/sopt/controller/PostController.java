@@ -1,6 +1,7 @@
 package org.sopt.controller;
 
 import org.sopt.dto.request.CreatePostRequest;
+import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.dto.response.ApiResponse;
 import org.sopt.dto.response.PostResponse;
 import org.sopt.exception.PostNotFoundException;
@@ -36,9 +37,9 @@ public class PostController {
     }
 
     // PUT /posts/{id} 📝 과제
-    public ApiResponse<Void> updatePost(Long id, String newTitle, String newContent) {
+    public ApiResponse<Void> updatePost(UpdatePostRequest request) {
         try {
-            postService.updatePost(id, newTitle, newContent);
+            postService.updatePost(request);
             return ApiResponse.success("✅ 게시글 수정 완료!");
         } catch (PostNotFoundException | IllegalArgumentException e) {
             return ApiResponse.error(e.getMessage());

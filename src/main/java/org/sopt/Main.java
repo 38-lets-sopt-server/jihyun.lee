@@ -2,6 +2,7 @@ package org.sopt;
 
 import org.sopt.controller.PostController;
 import org.sopt.dto.request.CreatePostRequest;
+import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.dto.response.ApiResponse;
 import org.sopt.dto.response.PostResponse;
 
@@ -75,7 +76,7 @@ public class Main {
                     String newTitle = scanner.nextLine();
                     System.out.print("새 내용: ");
                     String newContent = scanner.nextLine();
-                    ApiResponse<Void> updateResponse = postController.updatePost(updateId, newTitle, newContent);
+                    ApiResponse<Void> updateResponse = postController.updatePost(new UpdatePostRequest(updateId, newTitle, newContent));
                     System.out.println(updateResponse.getMessage());
                     break;
 
