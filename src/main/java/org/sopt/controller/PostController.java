@@ -6,14 +6,18 @@ import org.sopt.dto.response.ApiResponse;
 import org.sopt.dto.response.PostResponse;
 import org.sopt.exception.PostNotFoundException;
 import org.sopt.service.PostService;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RestController
+@RequestMapping("/posts")
 public class PostController {
     private final PostService postService = new PostService();
 
     // POST /posts
-    public ApiResponse<Void> createPost(CreatePostRequest request) {
+    @PostMapping
+    public ApiResponse<Void> createPost(@RequestBody CreatePostRequest request) {
         try {
             postService.createPost(request);
             return ApiResponse.successMessage("✅ 게시글 등록 완료!");
@@ -37,9 +41,9 @@ public class PostController {
     }
 
     // PUT /posts/{id} 📝 과제
-    public ApiResponse<Void> updatePost(UpdatePostRequest request) {
+    public ApiResponse<Void> updatePost(Long id, UpdatePostRequest request) {
         try {
-            postService.updatePost(request);
+            postService.updatePost(id, request);
             return ApiResponse.successMessage("✅ 게시글 수정 완료!");
         } catch (PostNotFoundException | IllegalArgumentException e) {
             return ApiResponse.error(e.getMessage());

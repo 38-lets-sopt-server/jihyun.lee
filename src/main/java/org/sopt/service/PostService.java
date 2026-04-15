@@ -7,10 +7,12 @@ import org.sopt.dto.response.PostResponse;
 import org.sopt.exception.PostNotFoundException;
 import org.sopt.repository.PostRepository;
 import org.sopt.validation.PostValidator;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Service
 public class PostService {
     private final PostRepository postRepository = new PostRepository();
 
@@ -18,32 +20,36 @@ public class PostService {
     public void createPost(CreatePostRequest request) {
         PostValidator.validateCreatePost(request);
         String createdAt = LocalDateTime.now().toString();
-        Post post = new Post(postRepository.generateId(), request.title, request.content, request.author, createdAt);
+        Post post = new Post(
+                postRepository.generateId(),
+                request.title,
+                request.content,
+                request.author,
+                createdAt
+        );
         postRepository.save(post);
     }
 
     // READ - 전체 📝 과제
     public List<PostResponse> getAllPosts() {
-        return postRepository.findAll().stream().map(PostResponse::new).toList();
+        return postRepository.findAll()
+                .stream()
+                .map(PostResponse::new)
+                .toList();
     }
 
     // READ - 단건 📝 과제
     public PostResponse getPost(Long id) {
-        Post post = postRepository.findById(id);
-        if (post == null) {
-            throw new PostNotFoundException();
-        }
+        Post post = postRepository.findById(id)
+                .orElseThrow(PostNotFoundException::new);
         return new PostResponse(post);
     }
 
     // UPDATE 📝 과제
-    public void updatePost(UpdatePostRequest request) {
+    public void updatePost(Long id, UpdatePostRequest request) {
         PostValidator.validateUpdatePost(request);
-        Post updatedPost = postRepository.update(request.id, request.title, request.content);
-
-        if (updatedPost == null) {
-            throw new PostNotFoundException();
-        }
+        postRepository.update(id, request.title, request.content)
+                .orElseThrow(PostNotFoundException::new);
     }
 
     // DELETE 📝 과제
