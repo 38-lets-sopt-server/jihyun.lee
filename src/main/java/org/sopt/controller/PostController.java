@@ -17,7 +17,9 @@ public class PostController {
 
     // POST /posts
     @PostMapping
-    public ApiResponse<Void> createPost(@RequestBody CreatePostRequest request) {
+    public ApiResponse<Void> createPost(
+            @RequestBody CreatePostRequest request
+    ) {
         try {
             postService.createPost(request);
             return ApiResponse.successMessage("✅ 게시글 등록 완료!");
@@ -26,13 +28,15 @@ public class PostController {
         }
     }
 
-    // GET /posts 📝 과제
+    // GET /posts
+    @GetMapping
     public ApiResponse<List<PostResponse>> getAllPosts() {
         return ApiResponse.success(postService.getAllPosts());
     }
 
-    // GET /posts/{id} 📝 과제
-    public ApiResponse<PostResponse> getPost(Long id) {
+    // GET /posts/{id}
+    @GetMapping("/{id}")
+    public ApiResponse<PostResponse> getPost(@PathVariable Long id) {
         try {
             return ApiResponse.success(postService.getPost(id));
         } catch (PostNotFoundException e) {
@@ -40,8 +44,12 @@ public class PostController {
         }
     }
 
-    // PUT /posts/{id} 📝 과제
-    public ApiResponse<Void> updatePost(Long id, UpdatePostRequest request) {
+    // PUT /posts/{id}
+    @PutMapping("/{id}")
+    public ApiResponse<Void> updatePost(
+            @PathVariable Long id,
+            @RequestBody UpdatePostRequest request
+    ) {
         try {
             postService.updatePost(id, request);
             return ApiResponse.successMessage("✅ 게시글 수정 완료!");
@@ -50,8 +58,9 @@ public class PostController {
         }
     }
 
-    // DELETE /posts/{id} 📝 과제
-    public ApiResponse<Void> deletePost(Long id) {
+    // DELETE /posts/{id}
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deletePost(@PathVariable Long id) {
         try {
             postService.deletePost(id);
             return ApiResponse.successMessage("✅ 게시글 삭제 완료!");
