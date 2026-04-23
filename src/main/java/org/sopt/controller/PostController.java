@@ -50,12 +50,11 @@ public class PostController {
 
     // PUT /posts/{id}
     @PutMapping("/{id}")
-    public ApiResponse<Void> updatePost(
+    public ApiResponse<UpdatePostResponse> updatePost(
             @PathVariable Long id,
             @RequestBody UpdatePostRequest request
     ) {
-        postService.updatePost(id, request);
-        return ApiResponse.successMessage("✅ 게시글 수정 완료!");
+        return ApiResponse.success(postService.updatePost(id, request));
     }
 
     // DELETE /posts/{id}
