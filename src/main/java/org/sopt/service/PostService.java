@@ -6,6 +6,7 @@ import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.dto.response.CreatePostResponse;
 import org.sopt.dto.response.PageResponse;
 import org.sopt.dto.response.PostResponse;
+import org.sopt.dto.response.UpdatePostResponse;
 import org.sopt.exception.PostNotFoundException;
 import org.sopt.repository.PostRepository;
 import org.sopt.validation.PostValidator;
@@ -59,10 +60,11 @@ public class PostService {
     }
 
     // UPDATE 📝 과제
-    public void updatePost(Long id, UpdatePostRequest request) {
+    public UpdatePostResponse updatePost(Long id, UpdatePostRequest request) {
         PostValidator.validateUpdatePost(request);
-        postRepository.update(id, request.title, request.content)
+        Post updatedPost = postRepository.update(id, request.title, request.content)
                 .orElseThrow(PostNotFoundException::new);
+        return new UpdatePostResponse(updatedPost.getId());
     }
 
     // DELETE 📝 과제

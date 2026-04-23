@@ -6,6 +6,7 @@ import org.sopt.dto.response.ApiResponse;
 import org.sopt.dto.response.CreatePostResponse;
 import org.sopt.dto.response.PageResponse;
 import org.sopt.dto.response.PostResponse;
+import org.sopt.dto.response.UpdatePostResponse;
 import org.sopt.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,18 +42,18 @@ public class PostController {
 
     // GET /posts/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostResponse>> getPost(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success(postService.getPost(id)));
+    public ApiResponse<PostResponse> getPost(@PathVariable Long id) {
+        return ApiResponse.success(postService.getPost(id));
     }
 
     // PUT /posts/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updatePost(
+    public ApiResponse<Void> updatePost(
             @PathVariable Long id,
             @RequestBody UpdatePostRequest request
     ) {
         postService.updatePost(id, request);
-        return ResponseEntity.ok(ApiResponse.successMessage("✅ 게시글 수정 완료!"));
+        return ApiResponse.successMessage("✅ 게시글 수정 완료!");
     }
 
     // DELETE /posts/{id}
