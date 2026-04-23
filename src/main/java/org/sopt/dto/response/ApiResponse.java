@@ -1,33 +1,33 @@
 package org.sopt.dto.response;
 
 public class ApiResponse<T> {
-    private final boolean success;
-    private final T data;
+    private final String code;
     private final String message;
+    private final T data;
 
-    private ApiResponse(boolean success, T data, String message) {
-        this.success = success;
-        this.data = data;
+    private ApiResponse(String code, T data, String message) {
+        this.code = code;
         this.message = message;
+        this.data = data;
     }
 
     public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(true, data, null);
+        return new ApiResponse<>(null, data, null);
     }
 
     public static <T> ApiResponse<T> success(T data, String message) {
-        return new ApiResponse<>(true, data, message);
+        return new ApiResponse<>(null, data, message);
     }
 
     public static <T> ApiResponse<T> successMessage(String message) {
-        return new ApiResponse<>(true, null, message);
+        return new ApiResponse<>(null, null, message);
     }
 
-    public static <T> ApiResponse<T> error(String message) {
-        return new ApiResponse<>(false, null, message);
+    public static <T> ApiResponse<T> error(String code, String message) {
+        return new ApiResponse<>(code, null, message);
     }
 
-    public boolean isSuccess() { return success; }
-    public T getData() { return data; }
+    public String getCode() { return code; }
     public String getMessage() { return message; }
+    public T getData() { return data; }
 }
