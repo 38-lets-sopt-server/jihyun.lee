@@ -3,6 +3,7 @@ package org.sopt.service;
 import org.sopt.domain.Post;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
+import org.sopt.dto.response.CreatePostResponse;
 import org.sopt.dto.response.PostResponse;
 import org.sopt.exception.PostNotFoundException;
 import org.sopt.repository.PostRepository;
@@ -14,20 +15,24 @@ import java.util.List;
 
 @Service
 public class PostService {
-    private final PostRepository postRepository = new PostRepository();
+    private final PostRepository postRepository;
+
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     // CREATE
-    public void createPost(CreatePostRequest request) {
+    public CreatePostResponse createPost(CreatePostRequest request) {
         PostValidator.validateCreatePost(request);
         String createdAt = LocalDateTime.now().toString();
-        Post post = new Post(
+        Post post = postRepository.save(new Post(
                 postRepository.generateId(),
                 request.title,
                 request.content,
                 request.author,
                 createdAt
-        );
-        postRepository.save(post);
+        ));
+        return new CreatePostResponse(post.getId());
     }
 
     // READ - 전체 📝 과제
