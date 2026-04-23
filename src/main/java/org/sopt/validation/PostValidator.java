@@ -37,4 +37,13 @@ public class PostValidator {
             throw new CustomException(ErrorCode.POST_CONTENT_REQUIRED);
         }
     }
+
+    public static void validatePageParams(int page, int size) {
+        if (page < 0) {
+            throw new CustomException(ErrorCode.INVALID_PAGE_NUMBER);
+        }
+        if (size < 1 || size > 100) {
+            throw new CustomException(ErrorCode.INVALID_PAGE_SIZE);
+        }
+    }
 }

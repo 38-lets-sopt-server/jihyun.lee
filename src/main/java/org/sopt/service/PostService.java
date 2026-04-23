@@ -4,6 +4,7 @@ import org.sopt.domain.Post;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.dto.response.CreatePostResponse;
+import org.sopt.dto.response.PageResponse;
 import org.sopt.dto.response.PostResponse;
 import org.sopt.exception.PostNotFoundException;
 import org.sopt.repository.PostRepository;
@@ -36,11 +37,18 @@ public class PostService {
     }
 
     // READ - 전체 📝 과제
-    public List<PostResponse> getAllPosts() {
-        return postRepository.findAll()
+    public PageResponse<PostResponse> getAllPosts(int page, int size) {
+        PostValidator.validatePageParams(page, size);
+
+        List<PostResponse> content = postRepository.findAll(page, size)
                 .stream()
                 .map(PostResponse::new)
                 .toList();
+        long totalElements = postRepository.countAll();
+        long totalPages = (long) Math.ceil((double) totalElements / size);
+        boolean hasNext = page > 0 && page < totalPages;
+
+        return new PageResponse<>(content, page, size, hasNext);
     }
 
     // READ - 단건 📝 과제

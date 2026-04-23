@@ -17,8 +17,15 @@ public class PostRepository {
         return post;
     }
 
-    public List<Post> findAll() {
-        return new ArrayList<>(postList);
+    public List<Post> findAll(int page, int size) {
+        return postList.stream()
+                .skip((long) page * size)
+                .limit(size)
+                .toList();
+    }
+
+    public long countAll() {
+        return postList.size();
     }
 
     public Optional<Post> findById(Long id) {

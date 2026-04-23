@@ -4,13 +4,13 @@ import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.dto.response.ApiResponse;
 import org.sopt.dto.response.CreatePostResponse;
+import org.sopt.dto.response.PageResponse;
 import org.sopt.dto.response.PostResponse;
 import org.sopt.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
@@ -32,8 +32,11 @@ public class PostController {
 
     // GET /posts
     @GetMapping
-    public ApiResponse<List<PostResponse>> getAllPosts() {
-        return ApiResponse.success(postService.getAllPosts());
+    public ApiResponse<PageResponse<PostResponse>> getAllPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.success(postService.getAllPosts(page, size));
     }
 
     // GET /posts/{id}
@@ -56,6 +59,6 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable Long id) {
         postService.deletePost(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.successMessage("✅ 게시글 삭제 완료!"));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
