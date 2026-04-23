@@ -9,6 +9,7 @@ public enum ErrorCode {
     POST_TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "POST_TITLE_REQUIRED", "제목은 필수입니다!"),
     POST_TITLE_TOO_LONG(HttpStatus.BAD_REQUEST, "POST_TITLE_TOO_LONG", "제목은 50글자 이하로 작성해주세요!"),
     POST_CONTENT_REQUIRED(HttpStatus.BAD_REQUEST, "POST_CONTENT_REQUIRED", "내용은 필수입니다!"),
+    POST_BOARD_TYPE_REQUIRED(HttpStatus.BAD_REQUEST, "POST_BOARD_TYPE_REQUIRED", "게시판 종류는 필수입니다!"),
 
     // Pagination
     INVALID_PAGE_NUMBER(HttpStatus.BAD_REQUEST, "INVALID_PAGE_NUMBER", "페이지 번호는 0 이상이어야 합니다."),

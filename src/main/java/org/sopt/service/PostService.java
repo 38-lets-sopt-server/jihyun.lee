@@ -1,5 +1,6 @@
 package org.sopt.service;
 
+import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
@@ -32,22 +33,35 @@ public class PostService {
                 request.title,
                 request.content,
                 request.author,
-                createdAt
+                createdAt,
+                request.boardType
         ));
         return new CreatePostResponse(post.getId());
     }
 
     // READ - 전체 📝 과제
-    public PageResponse<PostResponse> getAllPosts(int page, int size) {
+    public PageResponse<PostResponse> getAllPosts(BoardType boardType, int page, int size) {
         PostValidator.validatePageParams(page, size);
 
-        List<PostResponse> content = postRepository.findAll(page, size)
-                .stream()
-                .map(PostResponse::new)
-                .toList();
-        long totalElements = postRepository.countAll();
+        List<PostResponse> content;
+        long totalElements;
+
+        if (boardType != null) {
+            content = postRepository.findAllByBoardType(boardType, page, size)
+                    .stream()
+                    .map(PostResponse::new)
+                    .toList();
+            totalElements = postRepository.countByBoardType(boardType);
+        } else {
+            content = postRepository.findAll(page, size)
+                    .stream()
+                    .map(PostResponse::new)
+                    .toList();
+            totalElements = postRepository.countAll();
+        }
+
         long totalPages = (long) Math.ceil((double) totalElements / size);
-        boolean hasNext = page > 0 && page < totalPages;
+        boolean hasNext = page < totalPages - 1;
 
         return new PageResponse<>(content, page, size, hasNext);
     }

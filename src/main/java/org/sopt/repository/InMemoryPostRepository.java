@@ -1,5 +1,6 @@
 package org.sopt.repository;
 
+import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
 import org.springframework.stereotype.Repository;
 
@@ -27,8 +28,24 @@ public class InMemoryPostRepository implements PostRepository {
     }
 
     @Override
+    public List<Post> findAllByBoardType(BoardType boardType, int page, int size) {
+        return postList.stream()
+                .filter(post -> post.getBoardType() == boardType)
+                .skip((long) page * size)
+                .limit(size)
+                .toList();
+    }
+
+    @Override
     public long countAll() {
         return postList.size();
+    }
+
+    @Override
+    public long countByBoardType(BoardType boardType) {
+        return postList.stream()
+                .filter(post -> post.getBoardType() == boardType)
+                .count();
     }
 
     @Override

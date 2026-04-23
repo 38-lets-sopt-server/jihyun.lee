@@ -11,6 +11,9 @@ public class PostValidator {
     private PostValidator() {}
 
     public static void validateCreatePost(CreatePostRequest request) {
+        if (request.boardType == null) {
+            throw new CustomException(ErrorCode.POST_BOARD_TYPE_REQUIRED);
+        }
         validate(request.title, request.content);
     }
 

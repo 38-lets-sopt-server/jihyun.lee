@@ -1,5 +1,6 @@
 package org.sopt.controller;
 
+import org.sopt.domain.BoardType;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.dto.response.ApiResponse;
@@ -34,10 +35,11 @@ public class PostController {
     // GET /posts
     @GetMapping
     public ApiResponse<PageResponse<PostResponse>> getAllPosts(
+            @RequestParam(required = false) BoardType boardType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        return ApiResponse.success(postService.getAllPosts(page, size));
+        return ApiResponse.success(postService.getAllPosts(boardType, page, size));
     }
 
     // GET /posts/{id}

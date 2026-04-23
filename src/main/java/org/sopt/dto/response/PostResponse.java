@@ -1,5 +1,6 @@
 package org.sopt.dto.response;
 
+import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
 
 public class PostResponse {
@@ -8,6 +9,7 @@ public class PostResponse {
     String content;
     String author;
     String createdAt;
+    BoardType boardType;
 
     public PostResponse(Post post) {
         this.id = post.getId();
@@ -15,30 +17,13 @@ public class PostResponse {
         this.content = post.getContent();
         this.author = post.getAuthor();
         this.createdAt = post.getCreatedAt();
+        this.boardType = post.getBoardType();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    @Override
-    public String toString() {
-        return "[" + id + "] " + title + " - " + author + " (" + createdAt + ")\n" + content;
-    }
+    public Long getId() { return id; }
+    public String getTitle() { return title; }
+    public String getContent() { return content; }
+    public String getAuthor() { return author; }
+    public String getCreatedAt() { return createdAt; }
+    public BoardType getBoardType() { return boardType; }
 }
