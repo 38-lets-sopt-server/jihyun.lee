@@ -30,8 +30,8 @@ public class PostController {
 
     // GET /posts
     @GetMapping
-    public ApiResponse<PageResponse<PostListItemResponse>> getAllPosts(
-            @RequestParam(required = false) BoardType boardType,
+    public ApiResponse<PostListResponse> getAllPosts(
+            @RequestParam BoardType boardType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {

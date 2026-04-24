@@ -37,20 +37,20 @@ public class PostService {
     }
 
     // READ - 전체 📝 과제
-    public PageResponse<PostListItemResponse> getAllPosts(BoardType boardType, int page, int size) {
+    public PostListResponse getAllPosts(BoardType boardType, int page, int size) {
         PostValidator.validatePageParams(page, size);
 
-        List<PostListItemResponse> content;
+        List<PostListItemResponse> posts;
         long totalElements;
 
         if (boardType != null) {
-            content = postRepository.findAllByBoardType(boardType, page, size)
+            posts = postRepository.findAllByBoardType(boardType, page, size)
                     .stream()
                     .map(PostListItemResponse::new)
                     .toList();
             totalElements = postRepository.countByBoardType(boardType);
         } else {
-            content = postRepository.findAll(page, size)
+            posts = postRepository.findAll(page, size)
                     .stream()
                     .map(PostListItemResponse::new)
                     .toList();
@@ -60,7 +60,7 @@ public class PostService {
         long totalPages = (long) Math.ceil((double) totalElements / size);
         boolean hasNext = page < totalPages - 1;
 
-        return new PageResponse<>(content, page, size, hasNext);
+        return new PostListResponse(posts, boardType, page, size, hasNext);
     }
 
     // READ - 단건 📝 과제

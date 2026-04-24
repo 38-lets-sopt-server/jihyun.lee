@@ -7,16 +7,14 @@ public record PostListItemResponse(
         Long id,
         String title,
         String content,
-        String author,
-        BoardType boardType
+        String author
 ) {
     public PostListItemResponse(Post post) {
         this(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getAuthor(),
-                post.getBoardType()
+                post.getAuthor()
         );
     }
 }
