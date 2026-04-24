@@ -3,7 +3,9 @@ package org.sopt.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
-    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "잘못된 요청입니다."),
+    MISSING_REQUIRED_PARAM(HttpStatus.BAD_REQUEST, "MISSING_REQUIRED_PARAM", "필수 파라미터가 누락되었습니다."),
+    INVALID_PARAM_TYPE(HttpStatus.BAD_REQUEST, "INVALID_PARAM_TYPE", "파라미터 타입이 올바르지 않습니다."),
+    INVALID_REQUEST_BODY(HttpStatus.BAD_REQUEST, "INVALID_REQUEST_BODY", "요청 본문을 읽을 수 없습니다."),
 
     // Post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_NOT_FOUND", "해당 게시글이 존재하지 않습니다."),

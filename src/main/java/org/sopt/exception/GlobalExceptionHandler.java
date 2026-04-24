@@ -1,6 +1,5 @@
 package org.sopt.exception;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.sopt.dto.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,32 +20,21 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleMissingServletRequestParameter(
             MissingServletRequestParameterException e
     ) {
-        if ("boardType".equals(e.getParameterName())) {
-            return toErrorResponse(ErrorCode.BOARD_TYPE_REQUIRED);
-        }
-        return toErrorResponse(ErrorCode.INVALID_REQUEST);
+        return toErrorResponse(ErrorCode.MISSING_REQUIRED_PARAM);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiResponse<Void>> handleMethodArgumentTypeMismatch(
             MethodArgumentTypeMismatchException e
     ) {
-        if ("boardType".equals(e.getName())) {
-            return toErrorResponse(ErrorCode.INVALID_BOARD_TYPE);
-        }
-        return toErrorResponse(ErrorCode.INVALID_REQUEST);
+        return toErrorResponse(ErrorCode.INVALID_PARAM_TYPE);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
-        if (e.getCause() instanceof InvalidFormatException invalidFormatEx
-                && !invalidFormatEx.getPath().isEmpty()) {
-            String fieldName = invalidFormatEx.getPath().get(0).getFieldName();
-            if ("boardType".equals(fieldName)) {
-                return toErrorResponse(ErrorCode.INVALID_BOARD_TYPE);
-            }
-        }
-        return toErrorResponse(ErrorCode.INVALID_REQUEST);
+    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException e
+    ) {
+        return toErrorResponse(ErrorCode.INVALID_REQUEST_BODY);
     }
 
     private ResponseEntity<ApiResponse<Void>> toErrorResponse(ErrorCode errorCode) {

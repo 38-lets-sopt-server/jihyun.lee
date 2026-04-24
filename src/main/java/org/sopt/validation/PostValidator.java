@@ -1,5 +1,6 @@
 package org.sopt.validation;
 
+import org.sopt.domain.BoardType;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.exception.CustomException;
@@ -11,9 +12,7 @@ public class PostValidator {
     private PostValidator() {}
 
     public static void validateCreatePost(CreatePostRequest request) {
-        if (request.boardType() == null) {
-            throw new CustomException(ErrorCode.BOARD_TYPE_REQUIRED);
-        }
+        validateBoardType(request.boardType());
         validate(request.title(), request.content());
     }
 
@@ -47,6 +46,17 @@ public class PostValidator {
         }
         if (size < 1 || size > 100) {
             throw new CustomException(ErrorCode.INVALID_PAGE_SIZE);
+        }
+    }
+
+    public static BoardType validateBoardType(String boardType) {
+        if (boardType == null || boardType.isBlank()) {
+            throw new CustomException(ErrorCode.BOARD_TYPE_REQUIRED);
+        }
+        try {
+            return BoardType.valueOf(boardType);
+        } catch (IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.INVALID_BOARD_TYPE);
         }
     }
 }
