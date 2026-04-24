@@ -3,11 +3,7 @@ package org.sopt.controller;
 import org.sopt.domain.BoardType;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
-import org.sopt.dto.response.ApiResponse;
-import org.sopt.dto.response.CreatePostResponse;
-import org.sopt.dto.response.PageResponse;
-import org.sopt.dto.response.PostResponse;
-import org.sopt.dto.response.UpdatePostResponse;
+import org.sopt.dto.response.*;
 import org.sopt.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +30,7 @@ public class PostController {
 
     // GET /posts
     @GetMapping
-    public ApiResponse<PageResponse<PostResponse>> getAllPosts(
+    public ApiResponse<PageResponse<PostListItemResponse>> getAllPosts(
             @RequestParam(required = false) BoardType boardType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size

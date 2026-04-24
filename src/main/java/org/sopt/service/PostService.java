@@ -4,10 +4,7 @@ import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
-import org.sopt.dto.response.CreatePostResponse;
-import org.sopt.dto.response.PageResponse;
-import org.sopt.dto.response.PostResponse;
-import org.sopt.dto.response.UpdatePostResponse;
+import org.sopt.dto.response.*;
 import org.sopt.exception.PostNotFoundException;
 import org.sopt.repository.PostRepository;
 import org.sopt.validation.PostValidator;
@@ -27,35 +24,35 @@ public class PostService {
     // CREATE
     public CreatePostResponse createPost(CreatePostRequest request) {
         PostValidator.validateCreatePost(request);
-        String createdAt = LocalDateTime.now().toString();
+        LocalDateTime createdAt = LocalDateTime.now();
         Post post = postRepository.save(new Post(
                 postRepository.generateId(),
-                request.title,
-                request.content,
-                request.author,
+                request.title(),
+                request.content(),
+                request.author(),
                 createdAt,
-                request.boardType
+                request.boardType()
         ));
         return new CreatePostResponse(post.getId());
     }
 
     // READ - 전체 📝 과제
-    public PageResponse<PostResponse> getAllPosts(BoardType boardType, int page, int size) {
+    public PageResponse<PostListItemResponse> getAllPosts(BoardType boardType, int page, int size) {
         PostValidator.validatePageParams(page, size);
 
-        List<PostResponse> content;
+        List<PostListItemResponse> content;
         long totalElements;
 
         if (boardType != null) {
             content = postRepository.findAllByBoardType(boardType, page, size)
                     .stream()
-                    .map(PostResponse::new)
+                    .map(PostListItemResponse::new)
                     .toList();
             totalElements = postRepository.countByBoardType(boardType);
         } else {
             content = postRepository.findAll(page, size)
                     .stream()
-                    .map(PostResponse::new)
+                    .map(PostListItemResponse::new)
                     .toList();
             totalElements = postRepository.countAll();
         }
@@ -76,7 +73,7 @@ public class PostService {
     // UPDATE 📝 과제
     public UpdatePostResponse updatePost(Long id, UpdatePostRequest request) {
         PostValidator.validateUpdatePost(request);
-        Post updatedPost = postRepository.update(id, request.title, request.content)
+        Post updatedPost = postRepository.update(id, request.title(), request.content())
                 .orElseThrow(PostNotFoundException::new);
         return new UpdatePostResponse(updatedPost.getId());
     }
