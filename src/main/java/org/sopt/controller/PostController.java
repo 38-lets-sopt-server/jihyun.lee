@@ -2,61 +2,60 @@ package org.sopt.controller;
 
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
-import org.sopt.dto.response.ApiResponse;
-import org.sopt.dto.response.PostResponse;
-import org.sopt.exception.PostNotFoundException;
+import org.sopt.dto.response.*;
 import org.sopt.service.PostService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
 public class PostController {
-    private final PostService postService = new PostService();
+    private final PostService postService;
+
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     // POST /posts
     @PostMapping
-    public ApiResponse<Void> createPost(@RequestBody CreatePostRequest request) {
-        try {
-            postService.createPost(request);
-            return ApiResponse.successMessage("✅ 게시글 등록 완료!");
-        } catch (IllegalArgumentException e) {
-            return ApiResponse.error(e.getMessage());
-        }
+    public ResponseEntity<ApiResponse<CreatePostResponse>> createPost(
+            @RequestBody CreatePostRequest request
+    ) {
+        CreatePostResponse response = postService.createPost(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }
 
-    // GET /posts 📝 과제
-    public ApiResponse<List<PostResponse>> getAllPosts() {
-        return ApiResponse.success(postService.getAllPosts());
+    // GET /posts
+    @GetMapping
+    public ApiResponse<PostListResponse> getAllPosts(
+            @RequestParam String boardType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.success(postService.getAllPosts(boardType, page, size));
     }
 
-    // GET /posts/{id} 📝 과제
-    public ApiResponse<PostResponse> getPost(Long id) {
-        try {
-            return ApiResponse.success(postService.getPost(id));
-        } catch (PostNotFoundException e) {
-            return ApiResponse.error(e.getMessage());
-        }
+    // GET /posts/{id}
+    @GetMapping("/{id}")
+    public ApiResponse<PostResponse> getPost(@PathVariable Long id) {
+        return ApiResponse.success(postService.getPost(id));
     }
 
-    // PUT /posts/{id} 📝 과제
-    public ApiResponse<Void> updatePost(Long id, UpdatePostRequest request) {
-        try {
-            postService.updatePost(id, request);
-            return ApiResponse.successMessage("✅ 게시글 수정 완료!");
-        } catch (PostNotFoundException | IllegalArgumentException e) {
-            return ApiResponse.error(e.getMessage());
-        }
+    // PUT /posts/{id}
+    @PutMapping("/{id}")
+    public ApiResponse<UpdatePostResponse> updatePost(
+            @PathVariable Long id,
+            @RequestBody UpdatePostRequest request
+    ) {
+        return ApiResponse.success(postService.updatePost(id, request));
     }
 
-    // DELETE /posts/{id} 📝 과제
-    public ApiResponse<Void> deletePost(Long id) {
-        try {
-            postService.deletePost(id);
-            return ApiResponse.successMessage("✅ 게시글 삭제 완료!");
-        } catch (PostNotFoundException e) {
-            return ApiResponse.error(e.getMessage());
-        }
+    // DELETE /posts/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable Long id) {
+        postService.deletePost(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

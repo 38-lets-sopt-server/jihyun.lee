@@ -3,22 +3,18 @@ package org.sopt.dto.response;
 import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
 
-public record PostResponse (
+public record PostListItemResponse(
         Long id,
         String title,
         String content,
-        String author,
-        String createdAt,
-        BoardType boardType
+        String author
 ) {
-    public PostResponse(Post post) {
+    public PostListItemResponse(Post post) {
         this(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getAuthor(),
-                post.getCreatedAt().toString(),
-                post.getBoardType()
+                post.getAuthor()
         );
     }
 }

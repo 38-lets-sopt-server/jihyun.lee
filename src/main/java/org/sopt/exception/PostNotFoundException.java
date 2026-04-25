@@ -1,7 +1,7 @@
 package org.sopt.exception;
 
-public class PostNotFoundException extends RuntimeException {
+public class PostNotFoundException extends CustomException {
     public PostNotFoundException() {
-        super("🚫 해당 게시글이 존재하지 않습니다.");
+        super(ErrorCode.POST_NOT_FOUND);
     }
 }

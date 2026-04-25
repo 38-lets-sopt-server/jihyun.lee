@@ -1,9 +1,10 @@
 package org.sopt.service;
 
+import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
-import org.sopt.dto.response.PostResponse;
+import org.sopt.dto.response.*;
 import org.sopt.exception.PostNotFoundException;
 import org.sopt.repository.PostRepository;
 import org.sopt.validation.PostValidator;
@@ -14,28 +15,41 @@ import java.util.List;
 
 @Service
 public class PostService {
-    private final PostRepository postRepository = new PostRepository();
+    private final PostRepository postRepository;
+
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     // CREATE
-    public void createPost(CreatePostRequest request) {
+    public CreatePostResponse createPost(CreatePostRequest request) {
         PostValidator.validateCreatePost(request);
-        String createdAt = LocalDateTime.now().toString();
-        Post post = new Post(
+        LocalDateTime createdAt = LocalDateTime.now();
+        Post post = postRepository.save(new Post(
                 postRepository.generateId(),
-                request.title,
-                request.content,
-                request.author,
-                createdAt
-        );
-        postRepository.save(post);
+                request.title(),
+                request.content(),
+                request.author(),
+                createdAt,
+                BoardType.valueOf(request.boardType())
+        ));
+        return new CreatePostResponse(post.getId());
     }
 
     // READ - 전체 📝 과제
-    public List<PostResponse> getAllPosts() {
-        return postRepository.findAll()
+    public PostListResponse getAllPosts(String boardType, int page, int size) {
+        PostValidator.validatePageParams(page, size);
+        BoardType validatedBoardType = PostValidator.validateBoardType(boardType);
+
+        List<PostListItemResponse> posts = postRepository.findAllByBoardType(validatedBoardType, page, size)
                 .stream()
-                .map(PostResponse::new)
+                .map(PostListItemResponse::new)
                 .toList();
+        long totalElements = postRepository.countByBoardType(validatedBoardType);
+        long totalPages = (long) Math.ceil((double) totalElements / size);
+        boolean hasNext = page < totalPages - 1;
+
+        return new PostListResponse(posts, validatedBoardType, page, size, hasNext);
     }
 
     // READ - 단건 📝 과제
@@ -46,10 +60,11 @@ public class PostService {
     }
 
     // UPDATE 📝 과제
-    public void updatePost(Long id, UpdatePostRequest request) {
+    public UpdatePostResponse updatePost(Long id, UpdatePostRequest request) {
         PostValidator.validateUpdatePost(request);
-        postRepository.update(id, request.title, request.content)
+        Post updatedPost = postRepository.update(id, request.title(), request.content())
                 .orElseThrow(PostNotFoundException::new);
+        return new UpdatePostResponse(updatedPost.getId());
     }
 
     // DELETE 📝 과제
