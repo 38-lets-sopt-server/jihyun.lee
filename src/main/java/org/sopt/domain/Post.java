@@ -1,20 +1,29 @@
 package org.sopt.domain;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
+@Entity
 public class Post {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String content;
-    private String author;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
     private LocalDateTime createdAt;
     private BoardType boardType;
 
-    public Post(Long id, String title, String content, String author, LocalDateTime createdAt, BoardType boardType) {
-        this.id = id;
+    protected Post() {}
+
+    public Post(String title, String content, User user, LocalDateTime createdAt, BoardType boardType) {
         this.title = title;
         this.content = content;
-        this.author = author;
+        this.user = user;
         this.createdAt = createdAt;
         this.boardType = boardType;
     }
@@ -22,7 +31,7 @@ public class Post {
     public Long getId() { return id; }
     public String getTitle() { return title; }
     public String getContent() { return content; }
-    public String getAuthor() { return author; }
+    public User getUser() { return user; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public BoardType getBoardType() { return boardType; }
 

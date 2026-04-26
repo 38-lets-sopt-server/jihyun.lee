@@ -2,18 +2,11 @@ package org.sopt.repository;
 
 import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface PostRepository {
-    Post save(Post post);
-    List<Post> findAll(int page, int size);
-    List<Post> findAllByBoardType(BoardType boardType, int page, int size);
-    long countAll();
+public interface PostRepository extends JpaRepository<Post, Long> {
+    List<Post> findByBoardType(BoardType boardType);
     long countByBoardType(BoardType boardType);
-    Optional<Post> findById(Long id);
-    Optional<Post> update(Long id, String title, String content);
-    boolean deleteById(Long id);
-    Long generateId();
 }

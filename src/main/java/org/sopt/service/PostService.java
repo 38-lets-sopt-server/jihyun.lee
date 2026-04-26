@@ -2,13 +2,16 @@ package org.sopt.service;
 
 import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
+import org.sopt.domain.User;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.dto.response.*;
 import org.sopt.exception.PostNotFoundException;
 import org.sopt.repository.PostRepository;
+import org.sopt.repository.UserRepository;
 import org.sopt.validation.PostValidator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,35 +19,44 @@ import java.util.List;
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    public PostService(PostRepository postRepository) {
+    public PostService(
+            PostRepository postRepository,
+            UserRepository userRepository
+    ) {
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
-    // CREATE
+    @Transactional
     public CreatePostResponse createPost(CreatePostRequest request) {
         PostValidator.validateCreatePost(request);
         LocalDateTime createdAt = LocalDateTime.now();
-        Post post = postRepository.save(new Post(
-                postRepository.generateId(),
+
+        User user = userRepository.findById(request.userId())
+                .orElseThrow();
+
+        Post post = new Post(
                 request.title(),
                 request.content(),
-                request.author(),
+                user,
                 createdAt,
                 BoardType.valueOf(request.boardType())
-        ));
+        );
         return new CreatePostResponse(post.getId());
     }
 
-    // READ - 전체 📝 과제
+    @Transactional(readOnly = true)
     public PostListResponse getAllPosts(String boardType, int page, int size) {
         PostValidator.validatePageParams(page, size);
         BoardType validatedBoardType = PostValidator.validateBoardType(boardType);
 
-        List<PostListItemResponse> posts = postRepository.findAllByBoardType(validatedBoardType, page, size)
+        List<PostListItemResponse> posts = postRepository.findByBoardType(validatedBoardType)
                 .stream()
                 .map(PostListItemResponse::new)
                 .toList();
+
         long totalElements = postRepository.countByBoardType(validatedBoardType);
         long totalPages = (long) Math.ceil((double) totalElements / size);
         boolean hasNext = page < totalPages - 1;
@@ -52,27 +64,24 @@ public class PostService {
         return new PostListResponse(posts, validatedBoardType, page, size, hasNext);
     }
 
-    // READ - 단건 📝 과제
+    @Transactional(readOnly = true)
     public PostResponse getPost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFoundException::new);
         return new PostResponse(post);
     }
 
-    // UPDATE 📝 과제
+    @Transactional
     public UpdatePostResponse updatePost(Long id, UpdatePostRequest request) {
         PostValidator.validateUpdatePost(request);
-        Post updatedPost = postRepository.update(id, request.title(), request.content())
+        Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFoundException::new);
-        return new UpdatePostResponse(updatedPost.getId());
+        post.update(request.title(), request.content());
+        return new UpdatePostResponse(post.getId());
     }
 
-    // DELETE 📝 과제
+    @Transactional
     public void deletePost(Long id) {
-        boolean deleted = postRepository.deleteById(id);
-
-        if (!deleted) {
-            throw new PostNotFoundException();
-        }
+        postRepository.deleteById(id);
     }
 }
