@@ -1,6 +1,7 @@
 package org.sopt.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -17,14 +18,15 @@ public class Post {
     private User user;
     @Enumerated(EnumType.STRING)
     private BoardType boardType;
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     protected Post() {}
 
-    public Post(String title, String content, User user, LocalDateTime createdAt, BoardType boardType) {
+    public Post(String title, String content, User user, BoardType boardType) {
         this.title = title;
         this.content = content;
         this.user = user;
@@ -37,6 +39,7 @@ public class Post {
     public String getContent() { return content; }
     public User getUser() { return user; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
     public BoardType getBoardType() { return boardType; }
 
     public void update(String title, String content) {

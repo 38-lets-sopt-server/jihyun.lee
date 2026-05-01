@@ -20,10 +20,10 @@ public class PostController {
 
     // POST /posts
     @PostMapping
-    public ResponseEntity<ApiResponse<CreatePostResponse>> createPost(
+    public ResponseEntity<ApiResponse<IdResponse>> createPost(
             @RequestBody CreatePostRequest request
     ) {
-        CreatePostResponse response = postService.createPost(request);
+        IdResponse response = postService.createPost(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }
 
@@ -45,7 +45,7 @@ public class PostController {
 
     // PUT /posts/{id}
     @PutMapping("/{id}")
-    public ApiResponse<UpdatePostResponse> updatePost(
+    public ApiResponse<IdResponse> updatePost(
             @PathVariable Long id,
             @RequestBody UpdatePostRequest request
     ) {
