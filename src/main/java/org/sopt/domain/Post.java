@@ -15,8 +15,12 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    private LocalDateTime createdAt;
+    @Enumerated(EnumType.STRING)
     private BoardType boardType;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     protected Post() {}
 
