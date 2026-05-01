@@ -55,7 +55,7 @@ public class PostService {
         BoardType validatedBoardType = PostValidator.validateBoardType(boardType);
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> postPage = postRepository.findByBoardType(validatedBoardType, pageable);
+        Page<Post> postPage = postRepository.findByBoardTypeWithUser(validatedBoardType, pageable);
         List<PostListItemResponse> posts = postPage.getContent()
                 .stream()
                 .map(PostListItemResponse::new)
