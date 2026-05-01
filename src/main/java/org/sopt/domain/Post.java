@@ -1,12 +1,13 @@
 package org.sopt.domain;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
 @Entity
-public class Post {
+@SQLRestriction("deleted_at IS NULL")
+public class Post extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,9 +19,6 @@ public class Post {
     private User user;
     @Enumerated(EnumType.STRING)
     private BoardType boardType;
-    @Column(name = "created_at", updatable = false)
-    @CreationTimestamp
-    private LocalDateTime createdAt;
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
@@ -30,7 +28,6 @@ public class Post {
         this.title = title;
         this.content = content;
         this.user = user;
-        this.createdAt = createdAt;
         this.boardType = boardType;
     }
 
@@ -38,12 +35,15 @@ public class Post {
     public String getTitle() { return title; }
     public String getContent() { return content; }
     public User getUser() { return user; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getDeletedAt() { return deletedAt; }
     public BoardType getBoardType() { return boardType; }
 
     public void update(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now();
     }
 }
