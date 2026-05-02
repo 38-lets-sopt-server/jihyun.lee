@@ -20,7 +20,11 @@ public enum ErrorCode {
     INVALID_PAGE_SIZE(HttpStatus.BAD_REQUEST, "INVALID_PAGE_SIZE", "페이지 크기는 1 이상 100 이하여야 합니다."),
 
     // User
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "해당 ID의 User가 존재하지 않습니다.");
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "해당 ID의 User가 존재하지 않습니다."),
+
+    // Like
+    LIKE_ALREADY_EXISTS(HttpStatus.CONFLICT, "LIKE_ALREADY_EXISTS", "이미 좋아요를 누른 게시글입니다."),
+    LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "LIKE_NOT_FOUND", "좋아요 내역이 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
