@@ -88,4 +88,18 @@ public class PostService {
                 .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
         post.softDelete();
     }
+
+    @Transactional(readOnly = true)
+    public PostSearchResponse searchPosts(String keyword, int page, int size) {
+        PageValidator.validate(page, size);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> postPage = postRepository.searchByTitleWithUser(keyword, pageable);
+        List<PostListItemResponse> posts = postPage.getContent()
+                .stream()
+                .map(PostListItemResponse::new)
+                .toList();
+
+        return new PostSearchResponse(posts, keyword, page, size, postPage.hasNext());
+    }
 }

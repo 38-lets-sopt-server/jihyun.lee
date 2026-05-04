@@ -17,4 +17,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             @Param("boardType") BoardType boardType,
             Pageable pageable
     );
+
+    @Query(
+            value = "select p from Post p join fetch p.user where p.title like %:keyword%",
+            countQuery = "select count(p) from Post p where p.title like %:keyword%"
+    )
+    Page<Post> searchByTitleWithUser(
+            @Param("keyword") String keyword,
+            Pageable pageable
+    );
 }

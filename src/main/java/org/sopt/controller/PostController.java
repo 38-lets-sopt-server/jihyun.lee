@@ -54,6 +54,23 @@ public class PostController {
         return BaseResponse.success(postService.getAllPosts(boardType, page, size));
     }
 
+    @Operation(summary = "게시글 제목 검색", description = "키워드로 게시글 제목을 검색합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "검색 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 (page/size 범위 초과)", content = @Content)
+    })
+    @GetMapping("/search")
+    public BaseResponse<PostSearchResponse> searchPosts(
+            @Parameter(description = "검색 키워드", required = true, example = "안녕")
+            @RequestParam String keyword,
+            @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기 (1~100)", example = "10")
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return BaseResponse.success(postService.searchPosts(keyword, page, size));
+    }
+
     @Operation(summary = "게시글 단건 조회", description = "게시글 ID로 특정 게시글을 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시글 조회 성공"),
