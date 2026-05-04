@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,5 +28,9 @@ public class User {
 
     public String getEmail() {
         return this.email;
+    }
+
+    public void update(String nickname) {
+        this.nickname = nickname;
     }
 }
