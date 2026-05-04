@@ -4,10 +4,10 @@ import org.sopt.domain.Like;
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
 import org.sopt.dto.response.IdResponse;
-import org.sopt.exception.LikeAlreadyExistsException;
-import org.sopt.exception.LikeNotFoundException;
-import org.sopt.exception.PostNotFoundException;
-import org.sopt.exception.UserNotFoundException;
+import org.sopt.exception.CustomException;
+import org.sopt.exception.LikeErrorCode;
+import org.sopt.exception.PostErrorCode;
+import org.sopt.exception.UserErrorCode;
 import org.sopt.repository.LikeRepository;
 import org.sopt.repository.PostRepository;
 import org.sopt.repository.UserRepository;
@@ -33,12 +33,12 @@ public class LikeService {
     @Transactional
     public IdResponse addLike(Long postId, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
         Post post = postRepository.findById(postId)
-                .orElseThrow(PostNotFoundException::new);
+                .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
 
         if (likeRepository.existsByUserIdAndPostId(userId, postId)) {
-            throw new LikeAlreadyExistsException();
+            throw new CustomException(LikeErrorCode.LIKE_ALREADY_EXISTS);
         }
 
         Like like = likeRepository.save(new Like(user, post));
@@ -48,7 +48,7 @@ public class LikeService {
     @Transactional
     public void cancelLike(Long postId, Long userId) {
         Like like = likeRepository.findByUserIdAndPostId(userId, postId)
-                .orElseThrow(LikeNotFoundException::new);
+                .orElseThrow(() -> new CustomException(LikeErrorCode.LIKE_NOT_FOUND));
         likeRepository.delete(like);
     }
 }

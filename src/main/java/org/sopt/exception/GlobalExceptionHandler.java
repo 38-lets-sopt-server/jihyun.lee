@@ -20,21 +20,21 @@ public class GlobalExceptionHandler {
     public ResponseEntity<BaseResponse<Void>> handleMissingServletRequestParameter(
             MissingServletRequestParameterException e
     ) {
-        return toErrorResponse(ErrorCode.MISSING_REQUIRED_PARAM);
+        return toErrorResponse(CommonErrorCode.MISSING_REQUIRED_PARAM);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<BaseResponse<Void>> handleMethodArgumentTypeMismatch(
             MethodArgumentTypeMismatchException e
     ) {
-        return toErrorResponse(ErrorCode.INVALID_PARAM_TYPE);
+        return toErrorResponse(CommonErrorCode.INVALID_PARAM_TYPE);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<BaseResponse<Void>> handleHttpMessageNotReadable(
             HttpMessageNotReadableException e
     ) {
-        return toErrorResponse(ErrorCode.INVALID_REQUEST_BODY);
+        return toErrorResponse(CommonErrorCode.INVALID_REQUEST_BODY);
     }
 
     private ResponseEntity<BaseResponse<Void>> toErrorResponse(ErrorCode errorCode) {

@@ -88,7 +88,7 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "게시글 없음", content = @Content)
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse<Void>> deletePost(
+    public ResponseEntity<Void> deletePost(
             @Parameter(description = "게시글 ID", required = true, example = "1")
             @PathVariable Long id
     ) {

@@ -7,8 +7,8 @@ import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.dto.response.*;
 import org.sopt.exception.CustomException;
-import org.sopt.exception.ErrorCode;
-import org.sopt.exception.PostNotFoundException;
+import org.sopt.exception.PostErrorCode;
+import org.sopt.exception.UserErrorCode;
 import org.sopt.repository.PostRepository;
 import org.sopt.repository.UserRepository;
 import org.sopt.validation.PostValidator;
@@ -38,7 +38,7 @@ public class PostService {
         PostValidator.validateCreatePost(request);
 
         User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         Post post = postRepository.save(new Post(
                 request.title(),
@@ -67,7 +67,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponse getPost(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(PostNotFoundException::new);
+                .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
         return new PostResponse(post);
     }
 
@@ -75,7 +75,7 @@ public class PostService {
     public IdResponse updatePost(Long id, UpdatePostRequest request) {
         PostValidator.validateUpdatePost(request);
         Post post = postRepository.findById(id)
-                .orElseThrow(PostNotFoundException::new);
+                .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
         post.update(request.title(), request.content());
         return new IdResponse(post.getId());
     }
@@ -83,7 +83,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(PostNotFoundException::new);
+                .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
         post.softDelete();
     }
 }
