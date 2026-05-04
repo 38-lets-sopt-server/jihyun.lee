@@ -11,6 +11,8 @@ import org.sopt.exception.PostErrorCode;
 import org.sopt.exception.UserErrorCode;
 import org.sopt.repository.PostRepository;
 import org.sopt.repository.UserRepository;
+import org.sopt.validation.BoardTypeValidator;
+import org.sopt.validation.PageValidator;
 import org.sopt.validation.PostValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,17 +53,17 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostListResponse getAllPosts(String boardType, int page, int size) {
-        PostValidator.validatePageParams(page, size);
-        BoardType validatedBoardType = PostValidator.validateBoardType(boardType);
+        PageValidator.validate(page, size);
+        BoardType type = BoardTypeValidator.parse(boardType);
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> postPage = postRepository.findByBoardTypeWithUser(validatedBoardType, pageable);
+        Page<Post> postPage = postRepository.findByBoardTypeWithUser(type, pageable);
         List<PostListItemResponse> posts = postPage.getContent()
                 .stream()
                 .map(PostListItemResponse::new)
                 .toList();
 
-        return new PostListResponse(posts, validatedBoardType, page, size, postPage.hasNext());
+        return new PostListResponse(posts, type, page, size, postPage.hasNext());
     }
 
     @Transactional(readOnly = true)
