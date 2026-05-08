@@ -12,7 +12,6 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
-                .info(new Info().title("Swagger API").version("v1"))
-                .addServersItem(new Server().url("https://sopt-jh.p-e.kr"));
+                .info(new Info().title("Swagger API").version("v1"));
     }
 }
