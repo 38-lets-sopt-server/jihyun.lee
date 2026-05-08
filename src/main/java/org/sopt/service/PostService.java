@@ -6,14 +6,20 @@ import org.sopt.domain.User;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.dto.response.*;
-import org.sopt.exception.PostNotFoundException;
+import org.sopt.exception.CustomException;
+import org.sopt.exception.PostErrorCode;
+import org.sopt.exception.UserErrorCode;
 import org.sopt.repository.PostRepository;
 import org.sopt.repository.UserRepository;
+import org.sopt.validation.BoardTypeValidator;
+import org.sopt.validation.PageValidator;
 import org.sopt.validation.PostValidator;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -30,58 +36,70 @@ public class PostService {
     }
 
     @Transactional
-    public CreatePostResponse createPost(CreatePostRequest request) {
+    public IdResponse createPost(CreatePostRequest request) {
         PostValidator.validateCreatePost(request);
-        LocalDateTime createdAt = LocalDateTime.now();
 
         User user = userRepository.findById(request.userId())
-                .orElseThrow();
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
-        Post post = new Post(
+        Post post = postRepository.save(new Post(
                 request.title(),
                 request.content(),
                 user,
-                createdAt,
                 BoardType.valueOf(request.boardType())
-        );
-        return new CreatePostResponse(post.getId());
+        ));
+        return new IdResponse(post.getId());
     }
 
     @Transactional(readOnly = true)
     public PostListResponse getAllPosts(String boardType, int page, int size) {
-        PostValidator.validatePageParams(page, size);
-        BoardType validatedBoardType = PostValidator.validateBoardType(boardType);
+        PageValidator.validate(page, size);
+        BoardType type = BoardTypeValidator.parse(boardType);
 
-        List<PostListItemResponse> posts = postRepository.findByBoardType(validatedBoardType)
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> postPage = postRepository.findByBoardTypeWithUser(type, pageable);
+        List<PostListItemResponse> posts = postPage.getContent()
                 .stream()
                 .map(PostListItemResponse::new)
                 .toList();
 
-        long totalElements = postRepository.countByBoardType(validatedBoardType);
-        long totalPages = (long) Math.ceil((double) totalElements / size);
-        boolean hasNext = page < totalPages - 1;
-
-        return new PostListResponse(posts, validatedBoardType, page, size, hasNext);
+        return new PostListResponse(posts, type, page, size, postPage.hasNext());
     }
 
     @Transactional(readOnly = true)
     public PostResponse getPost(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(PostNotFoundException::new);
+                .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
         return new PostResponse(post);
     }
 
     @Transactional
-    public UpdatePostResponse updatePost(Long id, UpdatePostRequest request) {
+    public IdResponse updatePost(Long id, UpdatePostRequest request) {
         PostValidator.validateUpdatePost(request);
         Post post = postRepository.findById(id)
-                .orElseThrow(PostNotFoundException::new);
+                .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
         post.update(request.title(), request.content());
-        return new UpdatePostResponse(post.getId());
+        return new IdResponse(post.getId());
     }
 
     @Transactional
     public void deletePost(Long id) {
-        postRepository.deleteById(id);
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
+        post.softDelete();
+    }
+
+    @Transactional(readOnly = true)
+    public PostSearchResponse searchPosts(String keyword, int page, int size) {
+        PageValidator.validate(page, size);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> postPage = postRepository.searchByTitleWithUser(keyword, pageable);
+        List<PostListItemResponse> posts = postPage.getContent()
+                .stream()
+                .map(PostListItemResponse::new)
+                .toList();
+
+        return new PostSearchResponse(posts, keyword, page, size, postPage.hasNext());
     }
 }

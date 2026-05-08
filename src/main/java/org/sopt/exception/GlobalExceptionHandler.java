@@ -1,6 +1,6 @@
 package org.sopt.exception;
 
-import org.sopt.dto.response.ApiResponse;
+import org.sopt.dto.response.BaseResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -12,33 +12,33 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ApiResponse<Void>> handleCustomException(CustomException e) {
+    public ResponseEntity<BaseResponse<Void>> handleCustomException(CustomException e) {
         return toErrorResponse(e.getErrorCode());
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMissingServletRequestParameter(
+    public ResponseEntity<BaseResponse<Void>> handleMissingServletRequestParameter(
             MissingServletRequestParameterException e
     ) {
-        return toErrorResponse(ErrorCode.MISSING_REQUIRED_PARAM);
+        return toErrorResponse(CommonErrorCode.MISSING_REQUIRED_PARAM);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMethodArgumentTypeMismatch(
+    public ResponseEntity<BaseResponse<Void>> handleMethodArgumentTypeMismatch(
             MethodArgumentTypeMismatchException e
     ) {
-        return toErrorResponse(ErrorCode.INVALID_PARAM_TYPE);
+        return toErrorResponse(CommonErrorCode.INVALID_PARAM_TYPE);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable(
+    public ResponseEntity<BaseResponse<Void>> handleHttpMessageNotReadable(
             HttpMessageNotReadableException e
     ) {
-        return toErrorResponse(ErrorCode.INVALID_REQUEST_BODY);
+        return toErrorResponse(CommonErrorCode.INVALID_REQUEST_BODY);
     }
 
-    private ResponseEntity<ApiResponse<Void>> toErrorResponse(ErrorCode errorCode) {
+    private ResponseEntity<BaseResponse<Void>> toErrorResponse(ErrorCode errorCode) {
         return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(ApiResponse.error(errorCode.getCode(), errorCode.getMessage()));
+                .body(BaseResponse.error(errorCode.getCode(), errorCode.getMessage()));
     }
 }

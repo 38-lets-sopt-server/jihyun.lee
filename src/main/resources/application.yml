@@ -1,13 +1,11 @@
 spring:
   application:
     name: assignment
-
   datasource:
     url: jdbc:mysql://localhost:3306/assignment
-    username: username
-    password: password
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
       ddl-auto: update
