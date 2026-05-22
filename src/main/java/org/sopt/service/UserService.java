@@ -21,7 +21,7 @@ public class UserService {
 
     @Transactional
     public IdResponse createUser(CreateUserRequest request) {
-        User user = userRepository.save(new User(request.nickname(), request.email()));
+        User user = userRepository.save(new User(request.password(), request.nickname(), request.email()));
         return new IdResponse(user.getId());
     }
 

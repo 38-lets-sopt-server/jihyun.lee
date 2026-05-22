@@ -29,6 +29,8 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+    implementation 'com.auth0:java-jwt:4.4.0'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 test {

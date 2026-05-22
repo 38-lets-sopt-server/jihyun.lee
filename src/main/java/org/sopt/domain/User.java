@@ -10,10 +10,12 @@ public class User extends BaseTimeEntity {
     private Long id;
     private String nickname;
     private String email;
+    private String password;
 
     protected User() {};
 
-    public User(String nickname, String email) {
+    public User(String password, String nickname, String email) {
+        this.password = password;
         this.nickname = nickname;
         this.email = email;
     }
@@ -28,6 +30,10 @@ public class User extends BaseTimeEntity {
 
     public String getEmail() {
         return this.email;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 
     public void update(String nickname) {
