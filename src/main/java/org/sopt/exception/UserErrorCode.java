@@ -3,7 +3,8 @@ package org.sopt.exception;
 import org.springframework.http.HttpStatus;
 
 public enum UserErrorCode implements ErrorCode {
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "해당 ID의 User가 존재하지 않습니다.");
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "해당 ID의 User가 존재하지 않습니다."),
+    EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "EMAIL_ALREADY_EXISTS", "이미 사용 중인 이메일입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

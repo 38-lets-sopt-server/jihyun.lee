@@ -21,6 +21,10 @@ public class UserService {
 
     @Transactional
     public IdResponse createUser(CreateUserRequest request) {
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            throw new CustomException(UserErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+
         User user = userRepository.save(new User(request.password(), request.nickname(), request.email()));
         return new IdResponse(user.getId());
     }
