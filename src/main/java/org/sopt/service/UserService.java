@@ -25,13 +25,6 @@ public class UserService {
         return new IdResponse(user.getId());
     }
 
-    @Transactional(readOnly = true)
-    public UserResponse getUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
-        return new UserResponse(user);
-    }
-
     @Transactional
     public IdResponse updateUser(Long id, UpdateUserRequest request) {
         User user = userRepository.findById(id)
