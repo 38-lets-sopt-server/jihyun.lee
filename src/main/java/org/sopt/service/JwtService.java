@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Service
@@ -60,6 +62,17 @@ public class JwtService {
         } catch (NumberFormatException e) {
             throw new CustomException(AuthErrorCode.INVALID_TOKEN_SUBJECT);
         }
+    }
+
+    public LocalDateTime getExpiresAt(String token) {
+        DecodedJWT jwt;
+        try {
+            jwt = JWT.require(getAlgorithm()).build().verify(token);
+        } catch (JWTVerificationException e) {
+            throw new CustomException(AuthErrorCode.INVALID_TOKEN);
+        }
+
+        return LocalDateTime.ofInstant(jwt.getExpiresAt().toInstant(), ZoneId.systemDefault());
     }
 
     private Algorithm getAlgorithm() {

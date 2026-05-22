@@ -1,11 +1,14 @@
 package org.sopt.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.sopt.dto.response.BaseResponse;
 import org.sopt.dto.response.TokenResponse;
 import org.sopt.dto.response.UserResponse;
 import org.sopt.service.AuthService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +38,20 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.success(authService.reissue(refreshToken)));
     }
 
+    @Operation(summary = "로그아웃 (Refresh Token 삭제 + Access Token 블랙리스트 등록)")
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            Authentication authentication,
+            @Parameter(hidden = true)
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader
+    ) {
+        authService.logout(
+                Long.parseLong(authentication.getName()),
+                extractBearerToken(authorizationHeader)
+        );
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
     @Operation(summary = "내 정보 조회 (Access Token 검증)")
     @GetMapping("/me")
     public ResponseEntity<BaseResponse<UserResponse>> me(Authentication authentication) {
@@ -47,5 +64,9 @@ public class AuthController {
         UserResponse user = authService.getUserById(memberId);
 
         return ResponseEntity.ok(BaseResponse.success(user));
+    }
+
+    private String extractBearerToken(String authorizationHeader) {
+        return authorizationHeader.substring("Bearer ".length()).trim();
     }
 }

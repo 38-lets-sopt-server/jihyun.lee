@@ -1,6 +1,7 @@
 package org.sopt.service;
 
 import lombok.RequiredArgsConstructor;
+import org.sopt.domain.BlacklistedAccessToken;
 import org.sopt.domain.RefreshToken;
 import org.sopt.domain.User;
 import org.sopt.dto.response.TokenResponse;
@@ -8,6 +9,7 @@ import org.sopt.dto.response.UserResponse;
 import org.sopt.exception.AuthErrorCode;
 import org.sopt.exception.CustomException;
 import org.sopt.exception.UserErrorCode;
+import org.sopt.repository.BlacklistedAccessTokenRepository;
 import org.sopt.repository.RefreshTokenRepository;
 import org.sopt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +23,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final BlacklistedAccessTokenRepository blacklistedAccessTokenRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
@@ -45,7 +48,6 @@ public class AuthService {
         String accessToken = jwtService.generateAccessToken(member.id(), member.email());
         String refreshToken = jwtService.generateRefreshToken(member.id());
 
-        // 기존 Refresh Token 삭제 후 새로 저장
         refreshTokenRepository.deleteByMemberId(member.id());
         refreshTokenRepository.save(
                 RefreshToken.of(member.id(), refreshToken, refreshTokenExpiresInSeconds)
@@ -72,6 +74,17 @@ public class AuthService {
         savedRefreshToken.rotate(newRefreshToken, refreshTokenExpiresInSeconds);
 
         return TokenResponse.of(newAccessToken, newRefreshToken);
+    }
+
+    @Transactional
+    public void logout(Long userId, String accessToken) {
+        refreshTokenRepository.deleteByMemberId(userId);
+
+        if (!blacklistedAccessTokenRepository.existsByToken(accessToken)) {
+            blacklistedAccessTokenRepository.save(
+                    BlacklistedAccessToken.of(accessToken, jwtService.getExpiresAt(accessToken))
+            );
+        }
     }
 
     private Long verifyRefreshToken(String refreshToken) {
