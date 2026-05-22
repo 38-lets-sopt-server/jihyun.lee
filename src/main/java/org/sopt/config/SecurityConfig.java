@@ -38,13 +38,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login", "/api/v1/auth/reissue").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/posts").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/posts/*").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/posts/*").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/posts/*/likes").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/posts/*/likes").authenticated()
-                        .requestMatchers("/api/v1/auth/me").authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts", "/posts/search", "/posts/*").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception.authenticationEntryPoint((request, response, authException) -> {
                     response.setStatus(AuthErrorCode.UNAUTHENTICATED.getHttpStatus().value());
