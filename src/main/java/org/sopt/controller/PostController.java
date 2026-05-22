@@ -96,9 +96,10 @@ public class PostController {
     public BaseResponse<IdResponse> updatePost(
             @Parameter(description = "게시글 ID", required = true, example = "1")
             @PathVariable Long id,
-            @RequestBody UpdatePostRequest request
+            @RequestBody UpdatePostRequest request,
+            Authentication authentication
     ) {
-        return BaseResponse.success(postService.updatePost(id, request));
+        return BaseResponse.success(postService.updatePost(id, request, getAuthenticatedUserId(authentication)));
     }
 
     @Operation(summary = "게시글 삭제", description = "게시글 ID로 특정 게시글을 삭제합니다.")
@@ -109,9 +110,10 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(
             @Parameter(description = "게시글 ID", required = true, example = "1")
-            @PathVariable Long id
+            @PathVariable Long id,
+            Authentication authentication
     ) {
-        postService.deletePost(id);
+        postService.deletePost(id, getAuthenticatedUserId(authentication));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

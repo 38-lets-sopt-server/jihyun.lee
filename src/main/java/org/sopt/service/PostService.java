@@ -74,19 +74,27 @@ public class PostService {
     }
 
     @Transactional
-    public IdResponse updatePost(Long id, UpdatePostRequest request) {
+    public IdResponse updatePost(Long id, UpdatePostRequest request, Long userId) {
         PostValidator.validateUpdatePost(request);
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
+        validatePostOwner(post, userId);
         post.update(request.title(), request.content());
         return new IdResponse(post.getId());
     }
 
     @Transactional
-    public void deletePost(Long id) {
+    public void deletePost(Long id, Long userId) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
+        validatePostOwner(post, userId);
         post.softDelete();
+    }
+
+    private void validatePostOwner(Post post, Long userId) {
+        if (!post.getUser().getId().equals(userId)) {
+            throw new CustomException(PostErrorCode.POST_FORBIDDEN);
+        }
     }
 
     @Transactional(readOnly = true)
