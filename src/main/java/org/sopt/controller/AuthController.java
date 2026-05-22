@@ -26,14 +26,19 @@ public class AuthController {
             @RequestParam("password") String password
     ) {
         TokenResponse tokens = authService.login(email, password);
-
-        // 토큰 쿠키에 저장
-
         return ResponseEntity.ok(BaseResponse.success(tokens));
     }
 
+    @Operation(summary = "토큰 재발급 (Refresh Token 검증)")
+    @PostMapping("/reissue")
+    public ResponseEntity<BaseResponse<TokenResponse>> reissue(
+            @RequestParam("refreshToken") String refreshToken
+    ) {
+        return ResponseEntity.ok(BaseResponse.success(authService.reissue(refreshToken)));
+    }
+
     @Operation(summary = "내 정보 조회 (Access Token 검증)")
-    @GetMapping("/api/v1/me")
+    @GetMapping("/me")
     public ResponseEntity<BaseResponse<UserResponse>> me(Authentication authentication) {
 
         if (authentication == null || authentication.getPrincipal() == null) {
