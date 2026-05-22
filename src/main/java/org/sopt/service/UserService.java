@@ -8,15 +8,18 @@ import org.sopt.dto.response.UserResponse;
 import org.sopt.exception.CustomException;
 import org.sopt.exception.UserErrorCode;
 import org.sopt.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -25,7 +28,11 @@ public class UserService {
             throw new CustomException(UserErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
-        User user = userRepository.save(new User(request.password(), request.nickname(), request.email()));
+        User user = userRepository.save(new User(
+                passwordEncoder.encode(request.password()),
+                request.nickname(),
+                request.email()
+        ));
         return new IdResponse(user.getId());
     }
 
@@ -33,8 +40,15 @@ public class UserService {
     public IdResponse updateUser(UpdateUserRequest request, Long authenticatedUserId) {
         User user = userRepository.findById(authenticatedUserId)
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
-        user.update(request.password(), request.nickname());
+        user.update(encodePasswordIfPresent(request.password()), request.nickname());
         return new IdResponse(user.getId());
+    }
+
+    private String encodePasswordIfPresent(String password) {
+        if (password == null) {
+            return null;
+        }
+        return passwordEncoder.encode(password);
     }
 
     @Transactional

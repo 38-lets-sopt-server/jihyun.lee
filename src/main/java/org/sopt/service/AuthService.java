@@ -10,6 +10,7 @@ import org.sopt.exception.UserErrorCode;
 import org.sopt.repository.RefreshTokenRepository;
 import org.sopt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,21 +20,28 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${security.jwt.refresh-token-expires-in-seconds:1209600}")
     private long refreshTokenExpiresInSeconds;
 
-    public AuthService(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
+    public AuthService(
+            UserRepository userRepository,
+            RefreshTokenRepository refreshTokenRepository,
+            JwtService jwtService,
+            PasswordEncoder passwordEncoder
+    ) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserResponse loginWithCredentials(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(AuthErrorCode.INVALID_CREDENTIALS));
 
-        if (!user.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CustomException(AuthErrorCode.INVALID_CREDENTIALS);
         }
 
