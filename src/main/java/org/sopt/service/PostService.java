@@ -1,5 +1,6 @@
 package org.sopt.service;
 
+import lombok.RequiredArgsConstructor;
 import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
@@ -23,17 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-
-    public PostService(
-            PostRepository postRepository,
-            UserRepository userRepository
-    ) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-    }
 
     @Transactional
     public IdResponse createPost(CreatePostRequest request, Long userId) {

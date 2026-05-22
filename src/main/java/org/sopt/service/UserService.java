@@ -1,10 +1,10 @@
 package org.sopt.service;
 
+import lombok.RequiredArgsConstructor;
 import org.sopt.domain.User;
 import org.sopt.dto.request.CreateUserRequest;
 import org.sopt.dto.request.UpdateUserRequest;
 import org.sopt.dto.response.IdResponse;
-import org.sopt.dto.response.UserResponse;
 import org.sopt.exception.CustomException;
 import org.sopt.exception.UserErrorCode;
 import org.sopt.repository.UserRepository;
@@ -13,14 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Transactional
     public IdResponse createUser(CreateUserRequest request) {

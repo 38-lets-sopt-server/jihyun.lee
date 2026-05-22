@@ -1,6 +1,7 @@
 package org.sopt.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.sopt.dto.response.BaseResponse;
 import org.sopt.exception.AuthErrorCode;
 import org.springframework.context.annotation.Bean;
@@ -20,15 +21,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final ObjectMapper objectMapper;
-
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter, ObjectMapper objectMapper) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.objectMapper = objectMapper;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

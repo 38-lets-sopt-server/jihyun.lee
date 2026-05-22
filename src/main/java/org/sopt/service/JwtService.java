@@ -15,19 +15,14 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private final Algorithm algorithm;
-    private final long accessTokenExpiresInSeconds;
-    private final long refreshTokenExpiresInSeconds;
+    @Value("${security.jwt.secret}")
+    private String secret;
 
-    public JwtService(
-            @Value("${security.jwt.secret}") String secret,
-            @Value("${security.jwt.access-token-expires-in-seconds:1800}") long accessTokenExpiresInSeconds,
-            @Value("${security.jwt.refresh-token-expires-in-seconds:1209600}") long refreshTokenExpiresInSeconds
-    ) {
-        this.algorithm = Algorithm.HMAC256(secret);
-        this.accessTokenExpiresInSeconds = accessTokenExpiresInSeconds;
-        this.refreshTokenExpiresInSeconds = refreshTokenExpiresInSeconds;
-    }
+    @Value("${security.jwt.access-token-expires-in-seconds:1800}")
+    private long accessTokenExpiresInSeconds;
+
+    @Value("${security.jwt.refresh-token-expires-in-seconds:1209600}")
+    private long refreshTokenExpiresInSeconds;
 
     public String generateAccessToken(Long userId, String email) {
         Instant now = Instant.now();
@@ -36,7 +31,7 @@ public class JwtService {
                 .withClaim("email", email)
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(now.plusSeconds(accessTokenExpiresInSeconds)))
-                .sign(algorithm);
+                .sign(getAlgorithm());
     }
 
     public String generateRefreshToken(Long userId) {
@@ -45,7 +40,7 @@ public class JwtService {
                 .withSubject(String.valueOf(userId))
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(now.plusSeconds(refreshTokenExpiresInSeconds)))
-                .sign(algorithm);
+                .sign(getAlgorithm());
     }
 
     public Long verifyAndGetUserId(String token) {
@@ -55,7 +50,7 @@ public class JwtService {
 
         DecodedJWT jwt;
         try {
-            jwt = JWT.require(algorithm).build().verify(token);
+            jwt = JWT.require(getAlgorithm()).build().verify(token);
         } catch (JWTVerificationException e) {
             throw new CustomException(AuthErrorCode.INVALID_TOKEN);
         }
@@ -65,5 +60,9 @@ public class JwtService {
         } catch (NumberFormatException e) {
             throw new CustomException(AuthErrorCode.INVALID_TOKEN_SUBJECT);
         }
+    }
+
+    private Algorithm getAlgorithm() {
+        return Algorithm.HMAC256(secret);
     }
 }
