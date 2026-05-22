@@ -36,10 +36,10 @@ public class PostService {
     }
 
     @Transactional
-    public IdResponse createPost(CreatePostRequest request) {
+    public IdResponse createPost(CreatePostRequest request, Long userId) {
         PostValidator.validateCreatePost(request);
 
-        User user = userRepository.findById(request.userId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         Post post = postRepository.save(new Post(
