@@ -20,7 +20,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(summary = "로그인 (Access Token + Refresh Token 발급)")
+    @Operation(summary = "로그인")
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<TokenResponse>> login(
             @RequestParam("email") String email,
@@ -30,7 +30,7 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.success(tokens));
     }
 
-    @Operation(summary = "토큰 재발급 (Refresh Token 검증)")
+    @Operation(summary = "토큰 재발급")
     @PostMapping("/reissue")
     public ResponseEntity<BaseResponse<TokenResponse>> reissue(
             @RequestParam("refreshToken") String refreshToken
@@ -38,7 +38,7 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.success(authService.reissue(refreshToken)));
     }
 
-    @Operation(summary = "로그아웃 (Refresh Token 삭제 + Access Token 블랙리스트 등록)")
+    @Operation(summary = "로그아웃")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             Authentication authentication,
@@ -52,7 +52,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @Operation(summary = "내 정보 조회 (Access Token 검증)")
+    @Operation(summary = "내 정보 조회")
     @GetMapping("/me")
     public ResponseEntity<BaseResponse<UserResponse>> me(Authentication authentication) {
 
