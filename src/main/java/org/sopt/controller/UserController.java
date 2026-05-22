@@ -10,7 +10,6 @@ import org.sopt.dto.request.CreateUserRequest;
 import org.sopt.dto.request.UpdateUserRequest;
 import org.sopt.dto.response.BaseResponse;
 import org.sopt.dto.response.IdResponse;
-import org.sopt.dto.response.UserResponse;
 import org.sopt.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,19 +36,6 @@ public class UserController {
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponse.success(userService.createUser(request)));
-    }
-
-    @Operation(summary = "사용자 조회", description = "사용자 ID로 사용자 정보를 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "사용자 조회 성공"),
-            @ApiResponse(responseCode = "404", description = "사용자 없음", content = @Content)
-    })
-    @GetMapping("/{id}")
-    public BaseResponse<UserResponse> getUser(
-            @Parameter(description = "사용자 ID", required = true, example = "1")
-            @PathVariable Long id
-    ) {
-        return BaseResponse.success(userService.getUser(id));
     }
 
     @Operation(summary = "사용자 수정", description = "사용자 ID로 사용자 정보를 수정합니다.")
