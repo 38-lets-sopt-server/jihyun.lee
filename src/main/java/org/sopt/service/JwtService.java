@@ -26,26 +26,26 @@ public class JwtService {
         this.refreshTokenExpiresInSeconds = refreshTokenExpiresInSeconds;
     }
 
-    public String generateAccessToken(Long memberId, String email) {
+    public String generateAccessToken(Long userId, String email) {
         Instant now = Instant.now();
         return JWT.create()
-                .withSubject(String.valueOf(memberId))
+                .withSubject(String.valueOf(userId))
                 .withClaim("email", email)
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(now.plusSeconds(accessTokenExpiresInSeconds)))
                 .sign(algorithm);
     }
 
-    public String generateRefreshToken(Long memberId) {
+    public String generateRefreshToken(Long userId) {
         Instant now = Instant.now();
         return JWT.create()
-                .withSubject(String.valueOf(memberId))
+                .withSubject(String.valueOf(userId))
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(now.plusSeconds(refreshTokenExpiresInSeconds)))
                 .sign(algorithm);
     }
 
-    public Long verifyAndGetMemberId(String token) {
+    public Long verifyAndGetUserId(String token) {
         if (token == null || token.isBlank()) {
             throw new IllegalArgumentException("토큰이 없습니다.");
         }

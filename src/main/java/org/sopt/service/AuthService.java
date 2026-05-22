@@ -79,7 +79,7 @@ public class AuthService {
 
     private Long verifyRefreshToken(String refreshToken) {
         try {
-            return jwtService.verifyAndGetMemberId(refreshToken);
+            return jwtService.verifyAndGetUserId(refreshToken);
         } catch (IllegalArgumentException | JWTVerificationException e) {
             throw new CustomException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }

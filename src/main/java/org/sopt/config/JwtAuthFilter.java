@@ -35,9 +35,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring("Bearer ".length()).trim();
             try {
-                Long memberId = jwtService.verifyAndGetMemberId(token);
+                Long userId = jwtService.verifyAndGetUserId(token);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        String.valueOf(memberId), null, Collections.emptyList());
+                        String.valueOf(userId), null, Collections.emptyList());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (IllegalArgumentException | JWTVerificationException e) {
