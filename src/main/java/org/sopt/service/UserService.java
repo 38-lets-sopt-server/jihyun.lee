@@ -26,16 +26,16 @@ public class UserService {
     }
 
     @Transactional
-    public IdResponse updateUser(Long id, UpdateUserRequest request) {
-        User user = userRepository.findById(id)
+    public IdResponse updateUser(UpdateUserRequest request, Long authenticatedUserId) {
+        User user = userRepository.findById(authenticatedUserId)
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
-        user.update(request.nickname());
+        user.update(request.password(), request.nickname());
         return new IdResponse(user.getId());
     }
 
     @Transactional
-    public void deleteUser(Long id) {
-        User user = userRepository.findById(id)
+    public void deleteUser(Long authenticatedUserId) {
+        User user = userRepository.findById(authenticatedUserId)
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
         userRepository.delete(user);
     }
