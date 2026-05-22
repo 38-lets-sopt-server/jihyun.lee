@@ -1,10 +1,10 @@
 package org.sopt.config;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.sopt.exception.CustomException;
 import org.sopt.service.JwtService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,7 +40,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         String.valueOf(userId), null, Collections.emptyList());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (IllegalArgumentException | JWTVerificationException e) {
+            } catch (CustomException e) {
                 SecurityContextHolder.clearContext();
             }
         }

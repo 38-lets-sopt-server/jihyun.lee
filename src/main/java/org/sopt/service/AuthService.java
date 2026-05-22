@@ -1,6 +1,5 @@
 package org.sopt.service;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.sopt.domain.RefreshToken;
 import org.sopt.domain.User;
 import org.sopt.dto.response.TokenResponse;
@@ -80,7 +79,7 @@ public class AuthService {
     private Long verifyRefreshToken(String refreshToken) {
         try {
             return jwtService.verifyAndGetUserId(refreshToken);
-        } catch (IllegalArgumentException | JWTVerificationException e) {
+        } catch (CustomException e) {
             throw new CustomException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }
     }

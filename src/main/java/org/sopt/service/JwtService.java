@@ -2,7 +2,10 @@ package org.sopt.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.sopt.exception.AuthErrorCode;
+import org.sopt.exception.CustomException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -47,13 +50,20 @@ public class JwtService {
 
     public Long verifyAndGetUserId(String token) {
         if (token == null || token.isBlank()) {
-            throw new IllegalArgumentException("토큰이 없습니다.");
+            throw new CustomException(AuthErrorCode.TOKEN_REQUIRED);
         }
-        DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
+
+        DecodedJWT jwt;
+        try {
+            jwt = JWT.require(algorithm).build().verify(token);
+        } catch (JWTVerificationException e) {
+            throw new CustomException(AuthErrorCode.INVALID_TOKEN);
+        }
+
         try {
             return Long.parseLong(jwt.getSubject());
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("JWT의 회원 정보가 올바르지 않습니다.");
+            throw new CustomException(AuthErrorCode.INVALID_TOKEN_SUBJECT);
         }
     }
 }
