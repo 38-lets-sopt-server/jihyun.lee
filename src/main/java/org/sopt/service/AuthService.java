@@ -1,9 +1,13 @@
 package org.sopt.service;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.sopt.domain.RefreshToken;
 import org.sopt.domain.User;
 import org.sopt.dto.response.TokenResponse;
 import org.sopt.dto.response.UserResponse;
+import org.sopt.exception.AuthErrorCode;
+import org.sopt.exception.CustomException;
+import org.sopt.exception.UserErrorCode;
 import org.sopt.repository.RefreshTokenRepository;
 import org.sopt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,10 +32,10 @@ public class AuthService {
 
     public UserResponse loginWithCredentials(String email, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(AuthErrorCode.INVALID_CREDENTIALS));
 
         if (!user.getPassword().equals(password)) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
+            throw new CustomException(AuthErrorCode.INVALID_CREDENTIALS);
         }
 
         return new UserResponse(user);
@@ -53,9 +57,37 @@ public class AuthService {
         return TokenResponse.of(accessToken, refreshToken);
     }
 
+    @Transactional
+    public TokenResponse reissue(String refreshToken) {
+        Long memberId = verifyRefreshToken(refreshToken);
+        RefreshToken savedRefreshToken = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new CustomException(AuthErrorCode.INVALID_REFRESH_TOKEN));
+
+        if (!savedRefreshToken.getMemberId().equals(memberId) || savedRefreshToken.isExpired()) {
+            throw new CustomException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        User user = userRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        String newAccessToken = jwtService.generateAccessToken(user.getId(), user.getEmail());
+        String newRefreshToken = jwtService.generateRefreshToken(user.getId());
+        savedRefreshToken.rotate(newRefreshToken, refreshTokenExpiresInSeconds);
+
+        return TokenResponse.of(newAccessToken, newRefreshToken);
+    }
+
+    private Long verifyRefreshToken(String refreshToken) {
+        try {
+            return jwtService.verifyAndGetMemberId(refreshToken);
+        } catch (IllegalArgumentException | JWTVerificationException e) {
+            throw new CustomException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+        }
+    }
+
     public UserResponse getUserById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
         return new UserResponse(user);
     }
 }
