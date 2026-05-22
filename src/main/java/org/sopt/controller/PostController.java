@@ -12,6 +12,7 @@ import org.sopt.dto.response.*;
 import org.sopt.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Post", description = "게시글 관련 API")
@@ -31,9 +32,10 @@ public class PostController {
     })
     @PostMapping
     public ResponseEntity<BaseResponse<IdResponse>> createPost(
-            @RequestBody CreatePostRequest request
+            @RequestBody CreatePostRequest request,
+            Authentication authentication
     ) {
-        IdResponse response = postService.createPost(request);
+        IdResponse response = postService.createPost(request, getAuthenticatedUserId(authentication));
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
     }
 
@@ -111,5 +113,9 @@ public class PostController {
     ) {
         postService.deletePost(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    private Long getAuthenticatedUserId(Authentication authentication) {
+        return Long.parseLong(authentication.getName());
     }
 }
