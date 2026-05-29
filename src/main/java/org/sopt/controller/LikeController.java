@@ -6,23 +6,21 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.sopt.dto.request.LikeRequest;
+import lombok.RequiredArgsConstructor;
 import org.sopt.dto.response.BaseResponse;
 import org.sopt.dto.response.IdResponse;
 import org.sopt.service.LikeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Like", description = "좋아요 관련 API")
 @RestController
-@RequestMapping("/posts/{postId}/likes")
+@RequestMapping("/api/v1/posts/{postId}/likes")
+@RequiredArgsConstructor
 public class LikeController {
     private final LikeService likeService;
-
-    public LikeController(LikeService likeService) {
-        this.likeService = likeService;
-    }
 
     @Operation(summary = "좋아요 추가", description = "게시글에 좋아요를 추가합니다.")
     @ApiResponses({
@@ -34,10 +32,10 @@ public class LikeController {
     public ResponseEntity<BaseResponse<IdResponse>> addLike(
             @Parameter(description = "게시글 ID", required = true, example = "1")
             @PathVariable Long postId,
-            @RequestBody LikeRequest request
+            Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(BaseResponse.success(likeService.addLike(postId, request.userId())));
+                .body(BaseResponse.success(likeService.addLike(postId, getAuthenticatedUserId(authentication))));
     }
 
     @Operation(summary = "좋아요 취소", description = "게시글에 누른 좋아요를 취소합니다.")
@@ -49,9 +47,13 @@ public class LikeController {
     public ResponseEntity<BaseResponse<Void>> cancelLike(
             @Parameter(description = "게시글 ID", required = true, example = "1")
             @PathVariable Long postId,
-            @RequestBody LikeRequest request
+            Authentication authentication
     ) {
-        likeService.cancelLike(postId, request.userId());
+        likeService.cancelLike(postId, getAuthenticatedUserId(authentication));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    private Long getAuthenticatedUserId(Authentication authentication) {
+        return Long.parseLong(authentication.getName());
     }
 }

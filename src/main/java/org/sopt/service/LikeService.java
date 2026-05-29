@@ -1,5 +1,6 @@
 package org.sopt.service;
 
+import lombok.RequiredArgsConstructor;
 import org.sopt.domain.Like;
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
@@ -20,20 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class LikeService {
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-
-    public LikeService(
-            LikeRepository likeRepository,
-            PostRepository postRepository,
-            UserRepository userRepository
-    ) {
-        this.likeRepository = likeRepository;
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-    }
 
     @Retryable(
             retryFor = DataIntegrityViolationException.class,

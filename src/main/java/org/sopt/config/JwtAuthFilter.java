@@ -1,10 +1,12 @@
 package org.sopt.config;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.sopt.exception.CustomException;
+import org.sopt.repository.BlacklistedAccessTokenRepository;
 import org.sopt.service.JwtService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,13 +19,11 @@ import java.io.IOException;
 import java.util.Collections;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-
-    public JwtAuthFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
-    }
+    private final BlacklistedAccessTokenRepository blacklistedAccessTokenRepository;
 
     @Override
     protected void doFilterInternal(
@@ -35,16 +35,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring("Bearer ".length()).trim();
             try {
-                Long memberId = jwtService.verifyAndGetMemberId(token);
+                if (blacklistedAccessTokenRepository.existsByToken(token)) {
+                    SecurityContextHolder.clearContext();
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
+                Long userId = jwtService.verifyAndGetUserId(token);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        String.valueOf(memberId), null, Collections.emptyList());
+                        String.valueOf(userId), null, Collections.emptyList());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (IllegalArgumentException | JWTVerificationException e) {
-                // 유효하지 않은 토큰 또는 토큰이 없는 경우, 인증 없이 다음 필터로 넘겨요.
-                // 여기서 예외를 던지지 않는 이유는, /v1/login 같이 인증이 필요 없는 API도
-                // 이 필터를 거치기 때문이에요. 인증 여부 판단은 SecurityConfig의
-                // authorizeHttpRequests 설정에서 담당합니다.
+            } catch (CustomException e) {
+                SecurityContextHolder.clearContext();
             }
         }
 

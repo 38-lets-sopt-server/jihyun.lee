@@ -1,5 +1,6 @@
 package org.sopt.service;
 
+import lombok.RequiredArgsConstructor;
 import org.sopt.domain.BoardType;
 import org.sopt.domain.Post;
 import org.sopt.domain.User;
@@ -23,23 +24,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public PostService(
-            PostRepository postRepository,
-            UserRepository userRepository
-    ) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-    }
-
     @Transactional
-    public IdResponse createPost(CreatePostRequest request) {
+    public IdResponse createPost(CreatePostRequest request, Long userId) {
         PostValidator.validateCreatePost(request);
 
-        User user = userRepository.findById(request.userId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
 
         Post post = postRepository.save(new Post(
@@ -74,19 +68,27 @@ public class PostService {
     }
 
     @Transactional
-    public IdResponse updatePost(Long id, UpdatePostRequest request) {
+    public IdResponse updatePost(Long id, UpdatePostRequest request, Long userId) {
         PostValidator.validateUpdatePost(request);
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
+        validatePostOwner(post, userId);
         post.update(request.title(), request.content());
         return new IdResponse(post.getId());
     }
 
     @Transactional
-    public void deletePost(Long id) {
+    public void deletePost(Long id, Long userId) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new CustomException(PostErrorCode.POST_NOT_FOUND));
+        validatePostOwner(post, userId);
         post.softDelete();
+    }
+
+    private void validatePostOwner(Post post, Long userId) {
+        if (!post.getUser().getId().equals(userId)) {
+            throw new CustomException(PostErrorCode.POST_FORBIDDEN);
+        }
     }
 
     @Transactional(readOnly = true)

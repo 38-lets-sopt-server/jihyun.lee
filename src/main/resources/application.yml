@@ -17,6 +17,6 @@ spring:
 
 security:
   jwt:
-    secret: ${JWT_SECRETE}
+    secret: ${JWT_SECRET}
     access-token-expires-in-seconds: 1800     # 30분
     refresh-token-expires-in-seconds: 1209600 # 2주

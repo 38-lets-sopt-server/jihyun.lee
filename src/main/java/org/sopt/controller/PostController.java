@@ -6,23 +6,22 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.sopt.dto.request.CreatePostRequest;
 import org.sopt.dto.request.UpdatePostRequest;
 import org.sopt.dto.response.*;
 import org.sopt.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Post", description = "게시글 관련 API")
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/api/v1/posts")
+@RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
-
-    public PostController(PostService postService) {
-        this.postService = postService;
-    }
 
     @Operation(summary = "게시글 생성", description = "새 게시글을 생성합니다.")
     @ApiResponses({
@@ -31,9 +30,10 @@ public class PostController {
     })
     @PostMapping
     public ResponseEntity<BaseResponse<IdResponse>> createPost(
-            @RequestBody CreatePostRequest request
+            @RequestBody CreatePostRequest request,
+            Authentication authentication
     ) {
-        IdResponse response = postService.createPost(request);
+        IdResponse response = postService.createPost(request, getAuthenticatedUserId(authentication));
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponse.success(response));
     }
 
@@ -94,9 +94,10 @@ public class PostController {
     public BaseResponse<IdResponse> updatePost(
             @Parameter(description = "게시글 ID", required = true, example = "1")
             @PathVariable Long id,
-            @RequestBody UpdatePostRequest request
+            @RequestBody UpdatePostRequest request,
+            Authentication authentication
     ) {
-        return BaseResponse.success(postService.updatePost(id, request));
+        return BaseResponse.success(postService.updatePost(id, request, getAuthenticatedUserId(authentication)));
     }
 
     @Operation(summary = "게시글 삭제", description = "게시글 ID로 특정 게시글을 삭제합니다.")
@@ -107,9 +108,14 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(
             @Parameter(description = "게시글 ID", required = true, example = "1")
-            @PathVariable Long id
+            @PathVariable Long id,
+            Authentication authentication
     ) {
-        postService.deletePost(id);
+        postService.deletePost(id, getAuthenticatedUserId(authentication));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    private Long getAuthenticatedUserId(Authentication authentication) {
+        return Long.parseLong(authentication.getName());
     }
 }
